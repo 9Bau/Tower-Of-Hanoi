@@ -369,7 +369,18 @@
   .lv[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 700; }
   .limit-note { display: none; }
 
-  .timebar { margin-top: 8px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .timebar { position: relative; margin-top: 30px; height: 6px; border-radius: 999px; background: var(--line); }
+  .time-animal {
+    position: absolute; bottom: 3px; left: 100%; z-index: 1;
+    font-size: 1.5rem; line-height: 1; pointer-events: none;
+    transform: translateX(-50%);
+    transition: left .25s linear;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .time-animal span { display: block; }
+  .timebar.live .time-animal span { animation: trot .5s ease-in-out infinite; }
+  .timebar.low.live .time-animal span { animation-duration: .22s; }
+  @keyframes trot { 50% { transform: translateY(-4px) rotate(-6deg); } }
   #timeFill { height: 100%; width: 100%; background: var(--t-green); border-radius: 999px; transition: width .25s linear, background-color .35s; }
   .timebar.warn #timeFill { background: var(--t-yellow); }
   .timebar.low #timeFill { background: var(--t-red); }
@@ -446,7 +457,8 @@
     .side { display: flex; flex-direction: column; }
     header { order: 0; }
     .stats { order: 1; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 6px; }
-    .timebar { order: 2; margin-top: 6px; }
+    .timebar { order: 2; margin-top: 26px; }
+    .time-animal { font-size: 1.25rem; }
     .controls { order: 3; margin-top: 8px; padding: 8px; gap: 6px 8px; }
     .status { order: 4; margin-top: 6px; }
     .banner { order: 5; }
@@ -470,7 +482,8 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
-    #timeFill { transition: none !important; animation: none !important; }
+    #timeFill, .time-animal { transition: none !important; animation: none !important; }
+    .time-animal span { animation: none !important; }
   }
 </style>
 </head>
@@ -491,12 +504,12 @@
         <output id="nOut" aria-labelledby="diskLbl">2</output>
         <button class="btn round" id="plus" aria-label="เพิ่มจำนวนแผ่น">+</button>
       </div>
-      <div class="levels" role="group" aria-label="ระดับความยาก">
-        <span class="lbl">ระดับ</span>
-        <button class="btn lv" data-lv="veryeasy" aria-pressed="false">Very Easy</button>
-        <button class="btn lv" data-lv="easy" aria-pressed="true">Easy</button>
-        <button class="btn lv" data-lv="normal" aria-pressed="false">Normal</button>
-        <button class="btn lv" data-lv="advanced" aria-pressed="false">Advanced</button>
+      <div class="levels" role="group" aria-label="โหมดความเร็ว (เวลาจำกัด)">
+        <span class="lbl">ความเร็ว</span>
+        <button class="btn lv" data-lv="veryeasy" aria-pressed="false">🐢 เต่า</button>
+        <button class="btn lv" data-lv="easy" aria-pressed="true">🐇 กระต่าย</button>
+        <button class="btn lv" data-lv="normal" aria-pressed="false">🐆 ชีตาร์</button>
+        <button class="btn lv" data-lv="advanced" aria-pressed="false">🦅 เหยี่ยว</button>
       </div>
     </div>
     <div class="btns">
@@ -524,7 +537,7 @@
     <div class="stat"><div class="k"><span class="k-l">เวลาที่เหลือ</span><span class="k-s">เวลา</span></div><div class="v" id="time">00:00</div></div>
     <div class="stat"><div class="k"><span class="k-l">สถิติดีที่สุด</span><span class="k-s">ดีที่สุด</span></div><div class="v" id="best">–</div></div>
   </section>
-  <div class="timebar" id="timebar" aria-hidden="true"><div id="timeFill"></div></div>
+  <div class="timebar" id="timebar" aria-hidden="true"><div id="timeFill"></div><div class="time-animal" id="timeAnimal"><span id="timeAnimalIcon"></span></div></div>
 
   <p class="status" id="status" role="status" aria-live="polite"></p>
   <div class="banner" id="banner" hidden role="status">
@@ -545,7 +558,8 @@
   <div class="stage" id="stage"></div>
 
   <p class="help">
-    ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (นับแยกตามระดับและจำนวนแผ่น และปลดแล้วปลดถาวร)
+    ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (นับแยกตามโหมดความเร็วและจำนวนแผ่น และปลดแล้วปลดถาวร)
+    · ใบ้ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่แต่ถูกหักแต้มใบ้สะสม 3 แต้ม
     <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่</span>
   </p>
   </div>
@@ -560,11 +574,11 @@
       <div class="rank-next" id="smRankNext"></div>
       <div class="rank-ladder" id="smLadder"></div>
     </div>
-    <p class="modal-sum">รวม <b id="smTotal">0</b> / <span id="smMax">0</span> ดาว · นับดาวที่ดีที่สุดของแต่ละด่าน (ระดับ + จำนวนแผ่น)</p>
+    <p class="modal-sum">รวม <b id="smTotal">0</b> / <span id="smMax">0</span> ดาว · นับดาวที่ดีที่สุดของแต่ละด่าน (โหมดความเร็ว + จำนวนแผ่น)</p>
     <div class="rules" id="smRules"></div>
     <div class="tbl-wrap"><table class="star-tbl" id="smTable"></table></div>
     <p class="modal-note" id="smHintInfo"></p>
-    <p class="modal-note">รีเซ็ตสถิติ = ล้างดาวสะสม ยศ สถิติดีที่สุด การปลดล็อกเฉลยของทุกด่าน และคืนโควตาบอกใบ้เป็นเริ่มต้น แล้วกลับไปเริ่มที่ด่านแรก (2 แผ่น) ส่วนระดับความยากที่เลือกไว้ไม่เปลี่ยน</p>
+    <p class="modal-note">รีเซ็ตสถิติ = ล้างดาวสะสม ยศ สถิติดีที่สุด การปลดล็อกเฉลยของทุกด่าน และคืนโควตาบอกใบ้เป็นเริ่มต้น แล้วกลับไปเริ่มที่ด่านแรก (2 แผ่น) ส่วนโหมดความเร็วที่เลือกไว้ไม่เปลี่ยน</p>
     <div class="modal-actions">
       <button class="btn danger" id="smReset">รีเซ็ตสถิติทั้งหมด</button>
       <button class="btn primary" id="smClose">ปิด</button>
@@ -581,10 +595,10 @@
   var stage = $('#stage'), statusEl = $('#status'), banner = $('#banner');
 
   var LEVELS = {
-    veryeasy: { name: 'Very Easy', per: 10,   base: 30 },
-    easy:     { name: 'Easy',      per: 6,    base: 20 },
-    normal:   { name: 'Normal',    per: 3,    base: 15 },
-    advanced: { name: 'Advanced',  per: 1.75, base: 10 }
+    veryeasy: { icon: '🐢', name: '🐢 เต่า', per: 10,   base: 30 },
+    easy:     { icon: '🐇', name: '🐇 กระต่าย',     per: 6,    base: 20 },
+    normal:   { icon: '🐆', name: '🐆 ชีตาร์',   per: 3,    base: 15 },
+    advanced: { icon: '🦅', name: '🦅 เหยี่ยว',   per: 1.75, base: 10 }
   };
   var UNLOCK_FAILS = 3;
   var level = 'easy', over = false;
@@ -658,7 +672,11 @@
     return r;
   }
   /* ---------- ตัวช่วยบอกใบ้ ---------- */
-  var HINT_START = 3, HINT_COST = 1;   // เริ่มต้นฟรี 3 ครั้ง, ครั้งละ 1 ดาวจากยอดคงเหลือ
+  var HINT_START = 3;          // แต้มใบ้สะสมเริ่มต้น
+  var HINT_PER_ROUND = 3;      // โควตาใบ้ต่อ 1 รอบของด่าน
+  var hintsLeft = 0;           // โควตาใบ้ที่เหลือในรอบนี้
+  var curStage = null;         // ด่านของรอบปัจจุบัน
+  var roundTouched = false;    // รอบนี้เริ่มเล่น/ใช้ใบ้แล้วหรือยัง
   function hintBalance() { return Math.max(0, totalStars() + HINT_START - hintsSpent); }
   // ท่าถัดไปที่ดีที่สุดจากสถานะปัจจุบัน (ย้ายทุกแผ่นไปเสา C ด้วยจำนวนครั้งน้อยที่สุด)
   function nextBestMove() {
@@ -723,6 +741,7 @@
   }
   function startClock() {
     if (!started) { started = true; startTime = Date.now(); }
+    roundTouched = true;
   }
 
   /* ---------- flight animation ---------- */
@@ -764,8 +783,18 @@
   }
 
   /* ---------- game ---------- */
-  function init(newN) {
+  function init(newN, free) {
     stopSolve();
+    var targetN = typeof newN === 'number' ? newN : n;
+    var key = starKey(level, targetN), charged = 0;
+    // เริ่มรอบใหม่หลังจากเล่นไปแล้ว (กดเริ่มใหม่/ลองใหม่/ทิ้งรอบกลางคัน) = หักแต้มใบ้สะสมเท่าโควตาใหม่
+    var prevEnded = !!(won || over);
+    if (!free && roundTouched && (!prevEnded || key === curStage)) {
+      charged = Math.min(HINT_PER_ROUND, hintBalance());
+      hintsSpent += charged; savePrefs();
+    }
+    curStage = key; roundTouched = false;
+    hintsLeft = Math.min(HINT_PER_ROUND, hintBalance());
     hintMove = null; hintsUsed = 0;
     if (typeof newN === 'number') n = newN;
     try { localStorage.setItem('hanoi-n', String(n)); } catch (e) {}
@@ -774,7 +803,9 @@
     moves = 0; history = []; started = false; startTime = 0; elapsed = 0;
     won = false; over = false; selected = null; lastDrop = null; shakePeg = null;
     resetCelebration();
-    setStatus('แตะเสาเพื่อหยิบแผ่น · เวลาเริ่มนับเมื่อหยิบแผ่นแรก');
+    setStatus(charged > 0
+      ? '🔄 เริ่มใหม่ · หักแต้มใบ้สะสม ' + charged + ' · ใบ้รอบนี้ ' + hintsLeft + ' ครั้ง · แต้มใบ้สะสมคงเหลือ ' + hintBalance()
+      : 'แตะเสาเพื่อหยิบแผ่น · เวลาเริ่มนับเมื่อหยิบแผ่นแรก');
     render();
   }
 
@@ -817,7 +848,7 @@
         : 'ใช้ ' + moves + ' ครั้ง (น้อยที่สุดที่เป็นไปได้คือ ' + min + ' ครั้ง)';
       detail += ' · ใช้เวลา ' + fmtTime(elapsed) + ' จาก ' + fmtTime(limitMs()) + ' (' + LEVELS[level].name + ')';
       if (newRecord) detail += ' · สถิติใหม่ของ ' + n + ' แผ่น';
-      // ดาวของด่านนี้ (ระดับ + จำนวนแผ่น): เก็บค่าที่ดีที่สุด
+      // ดาวของด่านนี้ (โหมดความเร็ว + จำนวนแผ่น): เก็บค่าที่ดีที่สุด
       var totalBefore = totalStars();
       var base = starsFor(moves, min), sv = Math.max(1, base - hintsUsed);   // ใบ้ 1 ครั้ง หัก 1 ดาว (ขั้นต่ำ 1)
       var key = starKey(level, n), prev = stars[key] || 0;
@@ -905,7 +936,7 @@
     $('#bnTitle').textContent = '⏰ หมดเวลา!';
     showStarBanner(null);
     $('#bnDetail').textContent =
-      'ระดับ ' + LEVELS[level].name + ' กำหนด ' + fmtTime(limitMs()) + ' · ย้ายไปได้ ' + moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + min + ' ครั้ง) · ' +
+      'โหมด ' + LEVELS[level].name + ' กำหนด ' + fmtTime(limitMs()) + ' · ย้ายไปได้ ' + moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + min + ' ครั้ง) · ' +
       (unlocked
         ? 'ล้มเหลวในด่านนี้ครบ ' + UNLOCK_FAILS + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว'
         : 'ล้มเหลวในด่านนี้ ' + fails + '/' + UNLOCK_FAILS + ' ครั้ง อีก ' + (UNLOCK_FAILS - fails) + ' ครั้งจะปลดล็อกเฉลย');
@@ -1028,16 +1059,21 @@
 
   function useHint() {
     if (solving || won || over) return;
-    if (!hintMove) {                                   // ใบ้ซ้ำในสถานะเดิมไม่เสียดาวเพิ่ม
-      if (hintBalance() < HINT_COST) { setStatus('ดาวไม่พอสำหรับบอกใบ้ สะสมดาวเพิ่มเพื่อแลกใบ้', true); return; }
+    if (!hintMove) {                                   // ใบ้ซ้ำในสถานะเดิมไม่เสียโควตาเพิ่ม
+      if (hintsLeft <= 0) {
+        setStatus(hintBalance() <= 0
+          ? 'แต้มใบ้สะสมหมดแล้ว จึงไม่มีใบ้ให้ใช้ (สะสมดาวเพิ่มเพื่อได้แต้มใบ้)'
+          : 'ใช้ใบ้ครบ ' + HINT_PER_ROUND + ' ครั้งในรอบนี้แล้ว · กด "เริ่มใหม่" เพื่อรับใบ้อีก ' + Math.min(HINT_PER_ROUND, hintBalance()) + ' ครั้ง (หักแต้มใบ้สะสม ' + Math.min(HINT_PER_ROUND, hintBalance()) + ')', true);
+        return;
+      }
       var mv = nextBestMove();
       if (!mv) return;
-      hintsSpent += HINT_COST; hintsUsed++; savePrefs();
+      hintsLeft--; hintsUsed++; roundTouched = true;
       hintMove = mv; selected = null;
     }
     var top = pegs[hintMove[0]][pegs[hintMove[0]].length - 1];
     setStatus('💡 ใบ้: ย้ายแผ่นหมายเลข ' + top + ' จากเสา ' + NAMES[hintMove[0]] + ' ไปเสา ' + NAMES[hintMove[1]] +
-      ' · ใช้ใบ้รอบนี้ ' + hintsUsed + ' ครั้ง (ดาวรอบนี้ลด ' + hintsUsed + ' ดวง)');
+      ' · ใบ้เหลือ ' + hintsLeft + '/' + HINT_PER_ROUND + ' ครั้งในรอบนี้ (ดาวรอบนี้ลด ' + hintsUsed + ' ดวง)');
     render();
   }
   function undo() {
@@ -1062,7 +1098,7 @@
   }
   function startSolve() {
     if (curFails() < UNLOCK_FAILS) return;   // ด่านที่ปลดล็อกแล้วปลดถาวร (ล้างได้ด้วยปุ่มรีเซ็ตสถิติ)
-    init();
+    init(undefined, true);                   // ดูเฉลยไม่หักแต้มใบ้
     solving = true;
     solveList = []; buildSolution(n, 0, 2, 1, solveList);
     solveIdx = 0;
@@ -1186,11 +1222,11 @@
       sb.title = 'ต้องหมดเวลาในด่านนี้ (' + stageName() + ') ครบ ' + UNLOCK_FAILS + ' ครั้งจึงจะปลดล็อกเฉลย';
     }
     var hb = $('#hint'), bal = hintBalance();
-    $('#hintN').textContent = bal;
-    hb.disabled = solving || over || won || (!hintMove && bal < HINT_COST);
-    hb.title = bal < HINT_COST && !hintMove
-      ? 'ดาวไม่พอสำหรับใบ้ (สะสมดาวเพิ่มเพื่อแลกใบ้)'
-      : 'บอกใบ้การย้ายที่ดีที่สุดถัดไป · เหลือ ' + bal + ' ครั้ง · ใช้แล้วดาวรอบนี้ลด 1 ดวง (กด H)';
+    $('#hintN').textContent = hintsLeft;
+    hb.disabled = solving || over || won;
+    hb.title = 'บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H) · เหลือ ' + hintsLeft + '/' + HINT_PER_ROUND + ' ครั้งในรอบนี้ · แต้มใบ้สะสม ' + bal + ' · ใช้แล้วดาวรอบนี้ลด 1 ดวง';
+    var rb = $('#reset'), rc = Math.min(HINT_PER_ROUND, bal);
+    rb.title = roundTouched ? 'เริ่มรอบใหม่ · รับโควตาใบ้ใหม่ แต่หักแต้มใบ้สะสม ' + rc + ' (เหลือ ' + bal + ')' : 'เริ่มใหม่ (รอบนี้ยังไม่เริ่ม จึงไม่หักแต้มใบ้)';
     var lvs = document.querySelectorAll('.lv');
     for (var i = 0; i < lvs.length; i++) {
       lvs[i].setAttribute('aria-pressed', lvs[i].dataset.lv === level ? 'true' : 'false');
@@ -1200,9 +1236,12 @@
   function updateTime() {
     var lim = limitMs(), rem, pct;
     var bar = $('#timebar'), stat = $('#time').parentNode;
+    var ai = $('#timeAnimalIcon'), ic = LEVELS[level].icon;
+    if (ai.textContent !== ic) ai.textContent = ic;
     if (solving) {
       $('#time').textContent = '—';
       $('#timeFill').style.width = '100%';
+      $('#timeAnimal').style.left = '97%';
       bar.classList.remove('warn', 'low', 'live'); stat.classList.remove('low');
       return;
     }
@@ -1213,6 +1252,7 @@
     pct = rem / lim * 100;
     $('#time').textContent = fmtTime(Math.ceil(rem / 1000) * 1000);
     $('#timeFill').style.width = pct.toFixed(1) + '%';
+    $('#timeAnimal').style.left = Math.max(3, Math.min(97, pct)).toFixed(1) + '%';   // สัตว์วิ่งตามปลายแถบเวลา
     // สามช่วง: เขียว (เหลือ > 50%), เหลือง (20–50%), แดง (≤ 20%)
     var active = started && !won && !over;
     var low = pct <= 20;
@@ -1290,14 +1330,14 @@
     $('#smLadder').innerHTML = RANKS.map(function (r, i) {
       return '<span class="rank-chip' + (tot >= r.at ? ' got' : '') + (i === ri ? ' now' : '') + '">' + r.icon + ' ' + r.name + ' · ' + r.at + '★</span>';
     }).join('');
-    $('#smHintInfo').textContent = '💡 ตัวช่วยบอกใบ้: เหลือ ' + hintBalance() + ' ครั้ง (เริ่มต้นฟรี ' + HINT_START + ' ครั้ง + ดาวสะสมทุก 1 ดวง = 1 ครั้ง · ใช้ครั้งละ ' + HINT_COST + ') · ใบ้แต่ละครั้งหักดาวของรอบนั้น 1 ดวง (ขั้นต่ำ 1★) แต่ยศและดาวสะสมที่ได้แล้วไม่ลดลง';
+    $('#smHintInfo').textContent = '💡 แต้มใบ้สะสม: ' + hintBalance() + ' (เริ่มต้น ' + HINT_START + ' + ดาวสะสมทุก 1 ดวง = 1 แต้ม) · แต่ละรอบของด่านใช้ใบ้ได้สูงสุด ' + HINT_PER_ROUND + ' ครั้ง · ทุกครั้งที่เริ่มรอบใหม่หลังจากเล่นไปแล้ว (เริ่มใหม่/ลองใหม่) จะได้โควตาใบ้ใหม่ แต่ถูกหักจากแต้มใบ้สะสมครั้งละ ' + HINT_PER_ROUND + ' แต้ม · ใบ้แต่ละครั้งหักดาวของรอบนั้น 1 ดวง (ขั้นต่ำ 1★) แต่ยศและดาวสะสมที่ได้แล้วไม่ลดลง';
     $('#smRules').innerHTML =
       '<span class="on">★★★★★</span> ย้ายเท่าขั้นต่ำ · ' +
       '<span class="on">★★★★</span> ไม่เกิน ×1.25 · ' +
       '<span class="on">★★★</span> ไม่เกิน ×1.5 · ' +
       '<span class="on">★★</span> ไม่เกิน ×2 · ' +
       '<span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว) · ใช้ใบ้ครั้งละ −1 ดาวของรอบนั้น (ขั้นต่ำ 1★)';
-    var h = '<tr><th class="rowh">ระดับ / แผ่น</th>';
+    var h = '<tr><th class="rowh">โหมด / แผ่น</th>';
     for (var k = MIN_N; k <= MAX_N; k++) h += '<th>' + k + '</th>';
     h += '<th>รวม</th></tr>';
     for (var lv in LEVELS) {
@@ -1314,7 +1354,7 @@
     resetArmed = false;
   }
   function resetAllStats() {
-    stars = {}; failsMap = {}; hintsSpent = 0;
+    stars = {}; failsMap = {}; hintsSpent = 0; roundTouched = false; curStage = null;
     try {
       var del = [];
       for (var i = 0; i < localStorage.length; i++) {
