@@ -122,7 +122,33 @@
   .star-tbl td.none { color: var(--line); }
   .modal-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
   .btn.danger { color: var(--bad); }
-  @media (max-height: 540px) { header .star-total { min-height: 28px; padding: 1px 8px; font-size: .85rem; } }
+  .star-total .rk { font-weight: 500; margin-right: 4px; }
+  .bn-rank { margin-top: 6px; font-weight: 700; color: var(--ink); }
+  .bn-rank:empty { display: none; }
+  .rank-box { margin: 0 0 10px; padding: 10px; border-radius: 10px; background: var(--bg); }
+  .rank-now { font-size: 1.25rem; font-weight: 700; }
+  .rank-bar { margin-top: 6px; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .rank-fill { height: 100%; width: 0; background: var(--t-yellow); border-radius: 999px; transition: width .3s; }
+  .rank-next { margin-top: 4px; font-size: .85rem; color: var(--muted); }
+  .rank-ladder { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .rank-chip { font-size: .75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .rank-chip.got { color: var(--ink); border-color: var(--t-yellow); background: color-mix(in srgb, var(--t-yellow) 22%, transparent); font-weight: 500; }
+  .rank-chip.now { font-weight: 700; border-width: 2px; }
+  /* บอกใบ้: แผ่นต้นทางกะพริบ + ลูกศรชี้เสาปลายทาง */
+  .disk.hinted { outline: 3px solid var(--t-yellow); outline-offset: 2px; animation: hintblink 1s ease-in-out infinite; }
+  @keyframes hintblink { 50% { outline-color: color-mix(in srgb, var(--t-yellow) 25%, transparent); } }
+  .hint-arrow {
+    position: absolute; left: 50%; z-index: 2;
+    bottom: calc(var(--base) + (var(--n) + 1) * var(--dh) + 8px);
+    transform: translateX(-50%);
+    font-size: clamp(1.3rem, 5vw, 1.8rem); line-height: 1; color: var(--t-yellow);
+    text-shadow: 0 1px 2px rgba(0,0,0,.45);
+    animation: hintbounce .8s ease-in-out infinite; pointer-events: none;
+  }
+  @keyframes hintbounce { 50% { transform: translateX(-50%) translateY(6px); } }
+  .col.hint-to .goal-flag { display: none; }
+  .modal-note { margin: 10px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+  @media (max-height: 540px) { .hint-lbl { display: none; } header .star-total { min-height: 28px; padding: 1px 8px; font-size: .85rem; } }
   header h1 { margin: 0; font-size: clamp(1.3rem, 4vw, 1.6rem); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
   header p { display: none; }
 
@@ -392,7 +418,7 @@
     .settings { gap: 8px 12px; }
     .btns { border-top: 0; padding-top: 0; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .grp { display: contents; }
-    .btns { grid-template-columns: 1fr 1fr 1.25fr 1.15fr; }
+    .btns { grid-template-columns: 1fr 1fr 1fr 1.25fr 1.15fr; }
     .btns .btn { width: 100%; padding: 6px 2px; font-size: .84rem; min-height: 40px; white-space: nowrap; }
     .ln-extra { display: none; }
     .limit-note { font-size: .78rem; }
@@ -434,7 +460,7 @@
     .levels { gap: 4px; }
     .levels .btn { min-height: 34px; padding: 3px 9px; font-size: .82rem; }
     .btn.round { width: 34px; min-height: 34px; font-size: 1.1rem; }
-    .btns { grid-template-columns: 1fr 1fr 1.4fr 1fr; gap: 4px; }
+    .btns { grid-template-columns: 1fr 1fr 1fr 1.4fr 1fr; gap: 4px; }
     .btns .btn { min-height: 34px; font-size: .76rem; padding: 3px 1px; }
     select.btn { font-size: 14px; }
     .limit-note { display: none; }
@@ -443,7 +469,7 @@
     .help { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .disk, .disk.drop, .disk.shake, .disk.cheer, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
+    .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
     #timeFill { transition: none !important; animation: none !important; }
   }
 </style>
@@ -453,7 +479,7 @@
   <div class="side">
   <header>
     <h1>Tower of Hanoi</h1>
-    <button class="btn star-total" id="starTotal" aria-haspopup="dialog" title="สรุปดาวสะสม"><span class="st">★</span> <span id="starTotalN">0</span></button>
+    <button class="btn star-total" id="starTotal" aria-haspopup="dialog" title="ยศและสรุปดาวสะสม"><span class="rk" id="rankName"></span><span class="st">★</span> <span id="starTotalN">0</span></button>
     <p>ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C โดยย้ายได้ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก</p>
   </header>
 
@@ -462,7 +488,7 @@
       <div class="stepper">
         <span class="lbl" id="diskLbl">จำนวนแผ่น</span>
         <button class="btn round" id="minus" aria-label="ลดจำนวนแผ่น">−</button>
-        <output id="nOut" aria-labelledby="diskLbl">3</output>
+        <output id="nOut" aria-labelledby="diskLbl">2</output>
         <button class="btn round" id="plus" aria-label="เพิ่มจำนวนแผ่น">+</button>
       </div>
       <div class="levels" role="group" aria-label="ระดับความยาก">
@@ -477,6 +503,7 @@
       <div class="grp">
         <button class="btn" id="undo">ย้อนกลับ</button>
         <button class="btn" id="reset">เริ่มใหม่</button>
+        <button class="btn hint-btn" id="hint" title="บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H)">💡 <span class="hint-lbl">ใบ้</span> <span id="hintN">0</span></button>
       </div>
       <div class="grp">
         <button class="btn primary" id="solve">ดูเฉลย</button>
@@ -505,6 +532,7 @@
     <div class="bn-stars" id="bnStars" aria-live="polite"></div>
     <div class="bn-detail" id="bnDetail"></div>
     <div class="bn-total" id="bnTotal"></div>
+    <div class="bn-rank" id="bnRank"></div>
     <div class="bn-actions">
       <button class="btn primary" id="again">เล่นอีกครั้ง</button>
       <button class="btn" id="harder">เพิ่มความท้าทาย</button>
@@ -517,20 +545,28 @@
   <div class="stage" id="stage"></div>
 
   <p class="help">
-    ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้ง
-    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>R</kbd> เริ่มใหม่</span>
+    ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (นับแยกตามระดับและจำนวนแผ่น และปลดแล้วปลดถาวร)
+    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่</span>
   </p>
   </div>
 </div>
 
 <div class="modal" id="starModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="smTitle">
-    <h2 id="smTitle">★ สรุปดาวสะสม</h2>
+    <h2 id="smTitle">★ ยศและดาวสะสม</h2>
+    <div class="rank-box">
+      <div class="rank-now" id="smRank"></div>
+      <div class="rank-bar"><div class="rank-fill" id="smRankFill"></div></div>
+      <div class="rank-next" id="smRankNext"></div>
+      <div class="rank-ladder" id="smLadder"></div>
+    </div>
     <p class="modal-sum">รวม <b id="smTotal">0</b> / <span id="smMax">0</span> ดาว · นับดาวที่ดีที่สุดของแต่ละด่าน (ระดับ + จำนวนแผ่น)</p>
     <div class="rules" id="smRules"></div>
     <div class="tbl-wrap"><table class="star-tbl" id="smTable"></table></div>
+    <p class="modal-note" id="smHintInfo"></p>
+    <p class="modal-note">รีเซ็ตสถิติ = ล้างดาวสะสม ยศ สถิติดีที่สุด การปลดล็อกเฉลยของทุกด่าน และคืนโควตาบอกใบ้เป็นเริ่มต้น แล้วกลับไปเริ่มที่ด่านแรก (2 แผ่น) ส่วนระดับความยากที่เลือกไว้ไม่เปลี่ยน</p>
     <div class="modal-actions">
-      <button class="btn danger" id="smReset">ล้างดาวสะสม</button>
+      <button class="btn danger" id="smReset">รีเซ็ตสถิติทั้งหมด</button>
       <button class="btn primary" id="smClose">ปิด</button>
     </div>
   </div>
@@ -551,8 +587,11 @@
     advanced: { name: 'Advanced',  per: 1.75, base: 10 }
   };
   var UNLOCK_FAILS = 3;
-  var level = 'easy', fails = 0, over = false;
-  var n = 3;
+  var level = 'easy', over = false;
+  var hintsSpent = 0, hintMove = null, hintsUsed = 0;   // hintsUsed = จำนวนใบ้ที่ใช้ในรอบนี้ (หักดาวรอบนี้ ครั้งละ 1)   // ดาวที่ใช้แลกใบ้ไปแล้ว / ใบ้ที่กำลังแสดงอยู่ [จากเสา, ไปเสา]
+  var failsMap = {};   // 'ระดับ-จำนวนแผ่น' -> จำนวนครั้งที่หมดเวลาในด่านนั้น (นับแยกทีละด่าน)
+  var START_N = 2;      // ด่านแรกสำหรับผู้เล่นใหม่ / หลังรีเซ็ตสถิติ
+  var n = START_N;
   var lastDh = 0;
   var pendingFlight = null;
   var winPending = false, winInfo = null, winToken = 0, confetti = null;
@@ -563,14 +602,19 @@
     try {
       var lv = localStorage.getItem('hanoi-level');
       if (lv && LEVELS[lv]) level = lv;
-      var f = parseInt(localStorage.getItem('hanoi-fails'), 10);
-      if (f > 0) fails = Math.min(f, 99);
+      var fm = JSON.parse(localStorage.getItem('hanoi-fails-map') || '{}');
+      if (fm && typeof fm === 'object') failsMap = fm;
+      var sn = parseInt(localStorage.getItem('hanoi-n'), 10);   // ผู้เล่นเก่า: กลับมาต่อที่ด่านที่ค้างไว้
+      if (sn >= MIN_N && sn <= MAX_N) n = sn;
+      var hs = parseInt(localStorage.getItem('hanoi-hints-spent'), 10);
+      if (hs > 0) hintsSpent = Math.min(hs, 99999);
     } catch (e) {}
   }
   function savePrefs() {
     try {
       localStorage.setItem('hanoi-level', level);
-      localStorage.setItem('hanoi-fails', String(fails));
+      localStorage.setItem('hanoi-fails-map', JSON.stringify(failsMap));
+      localStorage.setItem('hanoi-hints-spent', String(hintsSpent));
     } catch (e) {}
   }
   /* ---------- stars ---------- */
@@ -598,6 +642,38 @@
     return 1;
   }
   function starKey(lv, k) { return lv + '-' + k; }
+  /* ---------- ยศ (ตามดาวสะสมรวม ไม่ลดลง) ---------- */
+  var RANKS = [
+    { at: 0,   icon: '🌱', name: 'มือใหม่' },
+    { at: 10,  icon: '🪵', name: 'เด็กฝึก' },
+    { at: 30,  icon: '🔧', name: 'นักย้ายแผ่น' },
+    { at: 60,  icon: '🏗️', name: 'ช่างฝีมือ' },
+    { at: 100, icon: '🎯', name: 'ผู้เชี่ยวชาญ' },
+    { at: 140, icon: '👑', name: 'ปรมาจารย์' },
+    { at: 175, icon: '🏆', name: 'ตำนานแห่งฮานอย' }
+  ];
+  function rankIndex(t) {
+    var r = 0;
+    for (var i = 0; i < RANKS.length; i++) if (t >= RANKS[i].at) r = i;
+    return r;
+  }
+  /* ---------- ตัวช่วยบอกใบ้ ---------- */
+  var HINT_START = 3, HINT_COST = 1;   // เริ่มต้นฟรี 3 ครั้ง, ครั้งละ 1 ดาวจากยอดคงเหลือ
+  function hintBalance() { return Math.max(0, totalStars() + HINT_START - hintsSpent); }
+  // ท่าถัดไปที่ดีที่สุดจากสถานะปัจจุบัน (ย้ายทุกแผ่นไปเสา C ด้วยจำนวนครั้งน้อยที่สุด)
+  function nextBestMove() {
+    var pos = [];
+    for (var pi = 0; pi < 3; pi++) pegs[pi].forEach(function (d) { pos[d] = pi; });
+    function step(k, target) {
+      if (k === 0) return null;
+      if (pos[k] === target) return step(k - 1, target);
+      var aux = 3 - pos[k] - target;
+      return step(k - 1, aux) || [pos[k], target];
+    }
+    return step(n, 2);
+  }
+  function curFails() { return Math.min(failsMap[starKey(level, n)] || 0, 99); }
+  function stageName() { return LEVELS[level].name + ' ' + n + ' แผ่น'; }
   function totalStars() {
     var sum = 0;
     for (var lv in LEVELS) for (var k = MIN_N; k <= MAX_N; k++) sum += stars[starKey(lv, k)] || 0;
@@ -690,7 +766,9 @@
   /* ---------- game ---------- */
   function init(newN) {
     stopSolve();
+    hintMove = null; hintsUsed = 0;
     if (typeof newN === 'number') n = newN;
+    try { localStorage.setItem('hanoi-n', String(n)); } catch (e) {}
     pegs = [[], [], []];
     for (var i = n; i >= 1; i--) pegs[0].push(i);
     moves = 0; history = []; started = false; startTime = 0; elapsed = 0;
@@ -709,6 +787,7 @@
   }
 
   function doMove(from, to, auto) {
+    hintMove = null;
     captureFlight(from, to);
     var d = pegs[from].pop();
     pegs[to].push(d);
@@ -731,18 +810,21 @@
       var best = getBest(n);
       var newRecord = best === null || moves < best;
       if (newRecord) setBest(n, moves);
-      perfect = moves === min;
+      perfect = moves === min && hintsUsed === 0;
       title = perfect ? '🏆 สมบูรณ์แบบ!' : '🎉 สำเร็จแล้ว!';
-      detail = perfect
+      detail = moves === min
         ? 'ย้ายครบใน ' + moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดที่เป็นไปได้'
         : 'ใช้ ' + moves + ' ครั้ง (น้อยที่สุดที่เป็นไปได้คือ ' + min + ' ครั้ง)';
       detail += ' · ใช้เวลา ' + fmtTime(elapsed) + ' จาก ' + fmtTime(limitMs()) + ' (' + LEVELS[level].name + ')';
       if (newRecord) detail += ' · สถิติใหม่ของ ' + n + ' แผ่น';
       // ดาวของด่านนี้ (ระดับ + จำนวนแผ่น): เก็บค่าที่ดีที่สุด
-      var sv = starsFor(moves, min), key = starKey(level, n), prev = stars[key] || 0;
+      var totalBefore = totalStars();
+      var base = starsFor(moves, min), sv = Math.max(1, base - hintsUsed);   // ใบ้ 1 ครั้ง หัก 1 ดาว (ขั้นต่ำ 1)
+      var key = starKey(level, n), prev = stars[key] || 0;
       if (sv > prev) { stars[key] = sv; saveStars(); }
-      $('#starTotalN').textContent = totalStars();
-      starInfo = { stars: sv, prev: prev, gained: Math.max(0, sv - prev), total: totalStars(), nextMax: sv < 5 ? starLimits(min)[4 - sv] : 0 };
+      updateHeader();
+      starInfo = { stars: sv, base: base, hints: hintsUsed, prev: prev, gained: Math.max(0, sv - prev), total: totalStars(), nextMax: sv < 5 ? starLimits(min)[4 - sv] : 0,
+        rankUp: rankIndex(totalStars()) > rankIndex(totalBefore) ? RANKS[rankIndex(totalStars())] : null };
     }
     // เก็บผลไว้ก่อน แล้วค่อยแสดงหลังจากแผ่นสุดท้ายวางเสร็จ (ดู render)
     winInfo = { title: title, detail: detail, auto: !!auto, perfect: perfect, star: starInfo };
@@ -788,16 +870,24 @@
     if (!info.auto && !reducedMotion()) launchConfetti();
   }
 
+  function updateHeader() {
+    var t = totalStars(), r = RANKS[rankIndex(t)];
+    $('#starTotalN').textContent = t;
+    $('#rankName').textContent = r.icon + ' ' + r.name;
+  }
   function showStarBanner(si) {
     var st = $('#bnStars'), tt = $('#bnTotal');
-    if (!si) { st.innerHTML = ''; tt.textContent = ''; return; }
+    var rk = $('#bnRank');
+    if (!si) { st.innerHTML = ''; tt.textContent = ''; rk.textContent = ''; return; }
+    rk.textContent = si.rankUp ? '🎖️ เลื่อนยศเป็น ' + si.rankUp.icon + ' ' + si.rankUp.name + '!' : '';
     st.innerHTML = starHtml(si.stars);
     st.setAttribute('aria-label', si.stars + ' ดาวจาก 5');
     var t = 'ได้ ' + si.stars + ' ดาว';
     if (si.gained > 0) t += ' · เพิ่มดาวสะสม +' + si.gained;
     else t += ' · ไม่เพิ่มดาวสะสม (ด่านนี้เคยได้ ' + si.prev + ' ดาวแล้ว)';
     t += ' · รวม ' + si.total + '/' + maxStars() + ' ดาว';
-    if (si.stars < 5) t += ' · ได้ ' + (si.stars + 1) + ' ดาวต้องย้ายไม่เกิน ' + si.nextMax + ' ครั้ง';
+    if (si.hints > 0) t += ' · ใช้ใบ้ ' + si.hints + ' ครั้ง' + (si.base > si.stars ? ' (ดาวลดจาก ' + si.base + ' เหลือ ' + si.stars + ')' : '') + ' · เล่นใหม่โดยไม่ใช้ใบ้เพื่อดาวเต็ม';
+    else if (si.stars < 5) t += ' · ได้ ' + (si.stars + 1) + ' ดาวต้องย้ายไม่เกิน ' + si.nextMax + ' ครั้ง';
     tt.textContent = t;
   }
   function showBanner() {
@@ -807,9 +897,9 @@
     over = true;
     selected = null;
     winToken++;
-    fails = Math.min(fails + 1, 99);
+    failsMap[starKey(level, n)] = Math.min(curFails() + 1, 99);
     savePrefs();
-    var unlocked = fails >= UNLOCK_FAILS;
+    var fails = curFails(), unlocked = fails >= UNLOCK_FAILS;
     var min = minMoves();
     render();
     $('#bnTitle').textContent = '⏰ หมดเวลา!';
@@ -817,8 +907,8 @@
     $('#bnDetail').textContent =
       'ระดับ ' + LEVELS[level].name + ' กำหนด ' + fmtTime(limitMs()) + ' · ย้ายไปได้ ' + moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + min + ' ครั้ง) · ' +
       (unlocked
-        ? 'ล้มเหลวสะสมครบ ' + UNLOCK_FAILS + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว'
-        : 'ล้มเหลวสะสม ' + fails + '/' + UNLOCK_FAILS + ' ครั้ง อีก ' + (UNLOCK_FAILS - fails) + ' ครั้งจะปลดล็อกเฉลย');
+        ? 'ล้มเหลวในด่านนี้ครบ ' + UNLOCK_FAILS + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว'
+        : 'ล้มเหลวในด่านนี้ ' + fails + '/' + UNLOCK_FAILS + ' ครั้ง อีก ' + (UNLOCK_FAILS - fails) + ' ครั้งจะปลดล็อกเฉลย');
     $('#again').textContent = 'ลองใหม่';
     $('#harder').hidden = true;
     $('#showSolve').hidden = !unlocked;
@@ -936,8 +1026,23 @@
     render();
   }
 
+  function useHint() {
+    if (solving || won || over) return;
+    if (!hintMove) {                                   // ใบ้ซ้ำในสถานะเดิมไม่เสียดาวเพิ่ม
+      if (hintBalance() < HINT_COST) { setStatus('ดาวไม่พอสำหรับบอกใบ้ สะสมดาวเพิ่มเพื่อแลกใบ้', true); return; }
+      var mv = nextBestMove();
+      if (!mv) return;
+      hintsSpent += HINT_COST; hintsUsed++; savePrefs();
+      hintMove = mv; selected = null;
+    }
+    var top = pegs[hintMove[0]][pegs[hintMove[0]].length - 1];
+    setStatus('💡 ใบ้: ย้ายแผ่นหมายเลข ' + top + ' จากเสา ' + NAMES[hintMove[0]] + ' ไปเสา ' + NAMES[hintMove[1]] +
+      ' · ใช้ใบ้รอบนี้ ' + hintsUsed + ' ครั้ง (ดาวรอบนี้ลด ' + hintsUsed + ' ดวง)');
+    render();
+  }
   function undo() {
     if (solving || over || won || !history.length) return;
+    hintMove = null;
     var m = history.pop();
     captureFlight(m[1], m[0]);
     var d = pegs[m[1]].pop();
@@ -956,9 +1061,7 @@
     buildSolution(k - 1, c, b, a, out);
   }
   function startSolve() {
-    if (fails < UNLOCK_FAILS) return;
-    fails = 0;
-    savePrefs();
+    if (curFails() < UNLOCK_FAILS) return;   // ด่านที่ปลดล็อกแล้วปลดถาวร (ล้างได้ด้วยปุ่มรีเซ็ตสถิติ)
     init();
     solving = true;
     solveList = []; buildSolution(n, 0, 2, 1, solveList);
@@ -1000,7 +1103,8 @@
 
     pegs.forEach(function (p, i) {
       var col = document.createElement('div');
-      col.className = 'col' + (i === 2 ? ' goal' : '') + (selected === i ? ' selected' : '');
+      col.className = 'col' + (i === 2 ? ' goal' : '') + (selected === i ? ' selected' : '') +
+        (hintMove && hintMove[0] === i ? ' hint-from' : '') + (hintMove && hintMove[1] === i ? ' hint-to' : '');
       col.dataset.i = i;
       col.tabIndex = 0;
       col.setAttribute('role', 'button');
@@ -1018,8 +1122,16 @@
         d.textContent = size;
         if (isTop && selected === i) d.classList.add('lifted');
         if (isTop && shakePeg === i) d.classList.add('shake');
+        if (isTop && hintMove && hintMove[0] === i) d.classList.add('hinted');
         peg.appendChild(d);
       });
+      if (hintMove && hintMove[1] === i) {
+        var arrow = document.createElement('div');
+        arrow.className = 'hint-arrow';
+        arrow.setAttribute('aria-hidden', 'true');
+        arrow.textContent = '▼';
+        peg.appendChild(arrow);
+      }
       if (i === 2) {
         var flag = document.createElement('div');
         flag.className = 'goal-flag';
@@ -1048,14 +1160,14 @@
     }
     if (focusIdx >= 0) stage.children[focusIdx].focus({ preventScroll: true });
 
-    $('#starTotalN').textContent = totalStars();
+    updateHeader();
     $('#nOut').textContent = n;
     $('#moves').textContent = moves;
     $('#minMoves').textContent = minMoves();
     var b = getBest(n);
     $('#best').textContent = b === null ? '–' : b;
     var L = LEVELS[level];
-    $('#limitNote').innerHTML = L.name + ' · จำกัด ' + fmtTime(limitMs()) + '<span class="ln-extra"> (นับเมื่อหยิบแผ่นแรก)</span> · หมดเวลาสะสม ' + Math.min(fails, UNLOCK_FAILS) + '/' + UNLOCK_FAILS;
+    $('#limitNote').innerHTML = L.name + ' · จำกัด ' + fmtTime(limitMs()) + '<span class="ln-extra"> (นับเมื่อหยิบแผ่นแรก)</span> · หมดเวลาในด่านนี้ ' + Math.min(curFails(), UNLOCK_FAILS) + '/' + UNLOCK_FAILS;
     updateTime();
     updateButtons();
   }
@@ -1067,12 +1179,18 @@
     var sb = $('#solve');
     if (solving) {
       sb.textContent = 'หยุดเฉลย'; sb.disabled = false; sb.removeAttribute('title');
-    } else if (fails >= UNLOCK_FAILS) {
+    } else if (curFails() >= UNLOCK_FAILS) {
       sb.textContent = 'ดูเฉลย'; sb.disabled = false; sb.removeAttribute('title');
     } else {
-      sb.textContent = '🔒 เฉลย ' + fails + '/' + UNLOCK_FAILS; sb.disabled = true;
-      sb.title = 'หมดเวลาครบ ' + UNLOCK_FAILS + ' ครั้งจึงจะปลดล็อกเฉลย';
+      sb.textContent = '🔒 เฉลย ' + curFails() + '/' + UNLOCK_FAILS; sb.disabled = true;
+      sb.title = 'ต้องหมดเวลาในด่านนี้ (' + stageName() + ') ครบ ' + UNLOCK_FAILS + ' ครั้งจึงจะปลดล็อกเฉลย';
     }
+    var hb = $('#hint'), bal = hintBalance();
+    $('#hintN').textContent = bal;
+    hb.disabled = solving || over || won || (!hintMove && bal < HINT_COST);
+    hb.title = bal < HINT_COST && !hintMove
+      ? 'ดาวไม่พอสำหรับใบ้ (สะสมดาวเพิ่มเพื่อแลกใบ้)'
+      : 'บอกใบ้การย้ายที่ดีที่สุดถัดไป · เหลือ ' + bal + ' ครั้ง · ใช้แล้วดาวรอบนี้ลด 1 ดวง (กด H)';
     var lvs = document.querySelectorAll('.lv');
     for (var i = 0; i < lvs.length; i++) {
       lvs[i].setAttribute('aria-pressed', lvs[i].dataset.lv === level ? 'true' : 'false');
@@ -1133,6 +1251,7 @@
     else if (k === 'b') select(1);
     else if (k === 'c') select(2);
     else if (k === 'z') undo();
+    else if (k === 'h') useHint();
     else if (k === 'r') init();
   });
 
@@ -1150,6 +1269,7 @@
   $('#plus').addEventListener('click', function () { if (n < MAX_N) init(n + 1); });
   $('#reset').addEventListener('click', function () { init(); });
   $('#undo').addEventListener('click', undo);
+  $('#hint').addEventListener('click', useHint);
   $('#solve').addEventListener('click', function () {
     if (solving) { stopSolve(); setStatus('หยุดเฉลยแล้ว แตะ "เริ่มใหม่" เพื่อเล่นเอง'); render(); }
     else startSolve();
@@ -1159,14 +1279,24 @@
   /* ---------- star summary modal ---------- */
   var modal = $('#starModal'), resetArmed = false;
   function renderStarModal() {
-    $('#smTotal').textContent = totalStars();
+    var tot = totalStars(), ri = rankIndex(tot), cur = RANKS[ri], nxt = RANKS[ri + 1];
+    $('#smTotal').textContent = tot;
     $('#smMax').textContent = maxStars();
+    $('#smRank').textContent = cur.icon + ' ยศ ' + cur.name;
+    $('#smRankFill').style.width = (nxt ? Math.round((tot - cur.at) / (nxt.at - cur.at) * 100) : 100) + '%';
+    $('#smRankNext').textContent = nxt
+      ? 'อีก ' + (nxt.at - tot) + ' ดาว จะเลื่อนเป็น ' + nxt.icon + ' ' + nxt.name + ' (ต้องมี ' + nxt.at + ' ดาว)'
+      : 'ถึงยศสูงสุดแล้ว 🎉';
+    $('#smLadder').innerHTML = RANKS.map(function (r, i) {
+      return '<span class="rank-chip' + (tot >= r.at ? ' got' : '') + (i === ri ? ' now' : '') + '">' + r.icon + ' ' + r.name + ' · ' + r.at + '★</span>';
+    }).join('');
+    $('#smHintInfo').textContent = '💡 ตัวช่วยบอกใบ้: เหลือ ' + hintBalance() + ' ครั้ง (เริ่มต้นฟรี ' + HINT_START + ' ครั้ง + ดาวสะสมทุก 1 ดวง = 1 ครั้ง · ใช้ครั้งละ ' + HINT_COST + ') · ใบ้แต่ละครั้งหักดาวของรอบนั้น 1 ดวง (ขั้นต่ำ 1★) แต่ยศและดาวสะสมที่ได้แล้วไม่ลดลง';
     $('#smRules').innerHTML =
       '<span class="on">★★★★★</span> ย้ายเท่าขั้นต่ำ · ' +
       '<span class="on">★★★★</span> ไม่เกิน ×1.25 · ' +
       '<span class="on">★★★</span> ไม่เกิน ×1.5 · ' +
       '<span class="on">★★</span> ไม่เกิน ×2 · ' +
-      '<span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว)';
+      '<span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว) · ใช้ใบ้ครั้งละ −1 ดาวของรอบนั้น (ขั้นต่ำ 1★)';
     var h = '<tr><th class="rowh">ระดับ / แผ่น</th>';
     for (var k = MIN_N; k <= MAX_N; k++) h += '<th>' + k + '</th>';
     h += '<th>รวม</th></tr>';
@@ -1180,8 +1310,22 @@
       h += '<td><b>' + sum + '</b></td></tr>';
     }
     $('#smTable').innerHTML = h;
-    $('#smReset').textContent = 'ล้างดาวสะสม';
+    $('#smReset').textContent = 'รีเซ็ตสถิติทั้งหมด';
     resetArmed = false;
+  }
+  function resetAllStats() {
+    stars = {}; failsMap = {}; hintsSpent = 0;
+    try {
+      var del = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && (k.indexOf('hanoi-best-') === 0 || k === 'hanoi-stars' || k === 'hanoi-fails-map' || k === 'hanoi-fails' || k === 'hanoi-hints-spent' || k === 'hanoi-n')) del.push(k);
+      }
+      del.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) {}
+    saveStars(); savePrefs();
+    init(START_N);                           // กลับไปเริ่มที่ด่านแรก (2 แผ่น) และรีเฟรชตัวเลขบนหน้าจอ
+    setStatus('รีเซ็ตสถิติทั้งหมดแล้ว');
   }
   function openStars() { renderStarModal(); modal.hidden = false; $('#smClose').focus(); }
   function closeStars() { modal.hidden = true; resetArmed = false; $('#starTotal').focus({ preventScroll: true }); }
@@ -1189,8 +1333,9 @@
   $('#smClose').addEventListener('click', closeStars);
   modal.addEventListener('click', function (e) { if (e.target === modal) closeStars(); });
   $('#smReset').addEventListener('click', function () {
-    if (!resetArmed) { resetArmed = true; this.textContent = 'กดอีกครั้งเพื่อยืนยันการล้าง'; return; }
-    stars = {}; saveStars(); renderStarModal(); render();
+    if (!resetArmed) { resetArmed = true; this.textContent = 'กดอีกครั้งเพื่อยืนยันรีเซ็ต'; return; }
+    resetAllStats();
+    renderStarModal();
   });
 
   setInterval(tick, 200);
@@ -1205,7 +1350,7 @@
 
   loadPrefs();
   loadStars();
-  init(3);
+  init(n);
 })();
 </script>
 </body>
