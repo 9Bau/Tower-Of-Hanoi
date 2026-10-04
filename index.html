@@ -125,35 +125,36 @@
   .bn-stars .off { color: var(--line); }
   .bn-stars:empty, .bn-total:empty { display: none; }
   .bn-total { margin-top: 6px; font-weight: 500; color: var(--ink); font-size: .95rem; }
-  .modal { position: fixed; inset: 0; z-index: 50; background: rgba(10, 18, 26, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { position: fixed; inset: 0; z-index: 50; background: rgba(10, 18, 26, .55); display: flex; align-items: center; justify-content: center; padding: max(8px, env(safe-area-inset-top, 0px)) 8px max(8px, env(safe-area-inset-bottom, 0px)); }
   .modal[hidden] { display: none; }
-  .modal-card { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 16px; }
-  .modal-card h2 { margin: 0; font-size: 1.2rem; }
-  .modal-sum { margin: 4px 0 10px; color: var(--muted); font-size: .95rem; }
-  .modal-sum b { color: var(--ink); font-size: 1.15rem; }
-  .rules { margin: 0 0 10px; padding: 8px 10px; border-radius: 10px; background: var(--bg); font-size: .85rem; line-height: 1.55; }
+  .modal-card { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); width: min(640px, 100%); max-height: 100%; overflow: auto; padding: 16px; font-size: 1.05rem; line-height: 1.5; }
+  .modal-card h2 { margin: 0 0 4px; font-size: 1.5rem; line-height: 1.3; }
+  .modal-sum { margin: 4px 0 12px; color: var(--muted); font-size: 1.05rem; line-height: 1.5; }
+  .modal-sum b { color: var(--ink); font-size: 1.3rem; }
+  .rules { margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: var(--bg); font-size: 1.02rem; line-height: 1.65; }
   .rules .on { color: var(--t-yellow); }
   .tbl-wrap { overflow-x: auto; }
-  .star-tbl { border-collapse: collapse; width: 100%; font-size: .85rem; font-variant-numeric: tabular-nums; }
-  .star-tbl th, .star-tbl td { border: 1px solid var(--line); padding: 4px 3px; text-align: center; min-width: 26px; }
-  .star-tbl th { background: var(--bg); font-weight: 500; color: var(--muted); }
-  .star-tbl th.rowh { text-align: left; padding-left: 6px; white-space: nowrap; color: var(--ink); }
+  .star-tbl { border-collapse: collapse; width: 100%; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .star-tbl th, .star-tbl td { border: 1px solid var(--line); padding: 8px 1px; text-align: center; min-width: 0; }
+  .star-tbl th { background: var(--bg); font-weight: 600; color: var(--muted); }
+  .star-tbl th.rowh { text-align: left; padding-left: 5px; padding-right: 4px; white-space: nowrap; color: var(--ink); font-size: 1rem; }
   .star-tbl td.v1, .star-tbl td.v2 { color: var(--muted); }
   .star-tbl td.v3, .star-tbl td.v4 { color: var(--ink); font-weight: 700; }
   .star-tbl td.v5 { color: #5a3b00; background: var(--t-yellow); font-weight: 700; }
   .star-tbl td.none { color: var(--line); }
-  .modal-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+  .modal-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+  .modal-actions .btn { font-size: 1.05rem; min-height: 46px; padding: 6px 16px; }
   .btn.danger { color: var(--bad); }
   .star-total .rk { font-weight: 500; margin-right: 4px; }
   .bn-rank { margin-top: 6px; font-weight: 700; color: var(--ink); }
   .bn-rank:empty { display: none; }
   .rank-box { margin: 0 0 10px; padding: 10px; border-radius: 10px; background: var(--bg); }
-  .rank-now { font-size: 1.25rem; font-weight: 700; }
+  .rank-now { font-size: 1.5rem; font-weight: 700; line-height: 1.3; }
   .rank-bar { margin-top: 6px; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
   .rank-fill { height: 100%; width: 0; background: var(--t-yellow); border-radius: 999px; transition: width .3s; }
-  .rank-next { margin-top: 4px; font-size: .85rem; color: var(--muted); }
-  .rank-ladder { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
-  .rank-chip { font-size: .75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .rank-next { margin-top: 6px; font-size: 1.05rem; color: var(--muted); line-height: 1.5; }
+  .rank-ladder { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .rank-chip { font-size: .98rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
   .rank-chip.got { color: var(--ink); border-color: var(--t-yellow); background: color-mix(in srgb, var(--t-yellow) 22%, transparent); font-weight: 500; }
   .rank-chip.now { font-weight: 700; border-width: 2px; }
   /* บอกใบ้: แผ่นต้นทางกะพริบ + ลูกศรชี้เสาปลายทาง */
@@ -169,7 +170,7 @@
   }
   @keyframes hintbounce { 50% { transform: translateX(-50%) translateY(6px); } }
   .col.hint-to .goal-flag { display: none; }
-  .modal-note { margin: 10px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+  .modal-note { margin: 12px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
   @media (max-height: 540px) { .hint-lbl { display: none; } header .star-total { min-height: 28px; padding: 1px 8px; font-size: .85rem; } }
   header h1 { margin: 0; font-size: clamp(1.3rem, 4vw, 1.6rem); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
   header p { display: none; }
@@ -735,6 +736,12 @@
       <li><b>วิธีย้าย:</b> แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง</li>
       <li><b>เวลา:</b> เริ่มนับถอยหลังเมื่อหยิบแผ่นแรก</li>
     </ol>
+
+    <h3>⭐ ดาวและยศ</h3>
+    <ul>
+      <li><b>ได้ดาว:</b> ผ่านด่านด้วยจำนวนครั้งที่ย้ายน้อยจะได้ดาวมาก สูงสุด 5 ดาวต่อด่าน</li>
+      <li><b>ดูเมนูดาว:</b> กดปุ่ม <b>★ ดาว</b> มุมขวาบน (มีไอคอนยศอยู่ข้างๆ) จะเปิดเมนูแสดงยศปัจจุบัน ดาวสะสม ตารางดาวของแต่ละด่าน และปุ่มรีเซ็ตสถิติ</li>
+    </ul>
 
     <h3>💡 ใบ้และเฉลย</h3>
     <ul>
@@ -1931,7 +1938,7 @@
       '<span class="on">★★★</span> ไม่เกิน ×1.5 · ' +
       '<span class="on">★★</span> ไม่เกิน ×2 · ' +
       '<span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว) · ใช้ใบ้ครั้งละ −1 ดาวของรอบนั้น (ขั้นต่ำ 1★)';
-    var h = '<tr><th class="rowh">โหมด / แผ่น</th>';
+    var h = '<tr><th class="rowh">แผ่น →</th>';
     for (var k = MIN_N; k <= MAX_N; k++) h += '<th>' + k + '</th>';
     h += '<th>รวม</th></tr>';
     for (var lv in LEVELS) {
@@ -1962,7 +1969,7 @@
     $('#startLbl').textContent = startLabel();
     setStatus('รีเซ็ตสถิติทั้งหมดแล้ว');
   }
-  function openStars() { renderStarModal(); modal.hidden = false; $('#smClose').focus(); }
+  function openStars() { renderStarModal(); modal.hidden = false; modal.querySelector('.modal-card').scrollTop = 0; $('#smClose').focus({ preventScroll: true }); }
   function closeStars() { modal.hidden = true; resetArmed = false; $('#starTotal').focus({ preventScroll: true }); }
   $('#starTotal').addEventListener('click', openStars);
   $('#smClose').addEventListener('click', closeStars);
