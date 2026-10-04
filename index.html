@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tower of Hanoi – หอคอยฮานอย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #E3EBF1;
+    --panel: #F6F9FB;
+    --ink: #1D2B36;
+    --muted: #5B6C7A;
+    --line: #C5D3DE;
+    --accent: #D9481F;
+    --accent-ink: #FFFFFF;
+    --wood: #C79A66;
+    --wood-dark: #8F623A;
+    --rod: #A87848;
+    --tint: rgba(217, 72, 31, .10);
+    --ok: #1B7F54;
+    --t-green: #1FA55A;
+    --t-yellow: #F2B01E;
+    --t-red: #E03131;
+    --ok-bg: #DDF3E8;
+    --bad: #B4321F;
+    --shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 2px 6px rgba(29, 43, 54, .12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141F29;
+      --panel: #1D2B37;
+      --ink: #E8EFF4;
+      --muted: #93A5B4;
+      --line: #324656;
+      --accent: #FF7A4D;
+      --accent-ink: #1A1008;
+      --wood: #6E4F33;
+      --wood-dark: #4A3422;
+      --rod: #8B6340;
+      --tint: rgba(255, 122, 77, .14);
+      --ok: #6FD6A3;
+      --t-green: #34D27B;
+      --t-yellow: #FFC83D;
+      --t-red: #FF4D4D;
+      --ok-bg: #173A2B;
+      --bad: #FF8F7C;
+      --shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 2px 8px rgba(0, 0, 0, .4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141F29;
+    --panel: #1D2B37;
+    --ink: #E8EFF4;
+    --muted: #93A5B4;
+    --line: #324656;
+    --accent: #FF7A4D;
+    --accent-ink: #1A1008;
+    --wood: #6E4F33;
+    --wood-dark: #4A3422;
+    --rod: #8B6340;
+    --tint: rgba(255, 122, 77, .14);
+    --ok: #6FD6A3;
+    --t-green: #34D27B;
+    --t-yellow: #FFC83D;
+    --t-red: #FF4D4D;
+    --ok-bg: #173A2B;
+    --bad: #FF8F7C;
+    --shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 2px 8px rgba(0, 0, 0, .4);
+  }
+
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Prompt", "Noto Sans Thai", "Sarabun", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { touch-action: manipulation; }
+  .app {
+    max-width: 960px; margin: 0 auto;
+    padding: 12px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px));
+  }
+  .k-s { display: none; }
+
+  header h1 { margin: 0; font-size: clamp(1.3rem, 4vw, 1.6rem); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+  header p { display: none; }
+
+  .controls {
+    margin-top: 8px;
+    display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 12px;
+  }
+  .stepper { display: flex; align-items: center; gap: 8px; }
+  .stepper .lbl { font-weight: 500; font-size: .95rem; }
+  .stepper output {
+    min-width: 2ch; text-align: center; font-weight: 700; font-size: 1.2rem; font-variant-numeric: tabular-nums;
+  }
+  .settings { flex-basis: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px; }
+  .btns {
+    flex-basis: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px;
+    border-top: 1px solid var(--line); padding-top: 8px;
+  }
+  .grp { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+  button, select {
+    font: inherit;
+    color: var(--ink);
+  }
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 5px 12px;
+    min-height: 36px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--muted); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .btn.round { width: 36px; padding: 0; font-size: 1.3rem; line-height: 1; }
+  select.btn { padding-right: 8px; }
+
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .stats {
+    margin-top: 8px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 4px 12px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  }
+  .stat .k { font-size: .8rem; color: var(--muted); }
+  .stat .v { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .status {
+    margin: 8px 2px 0;
+    min-height: 1.4em;
+    color: var(--muted);
+    font-size: .93rem;
+  }
+  .status.bad { color: var(--bad); font-weight: 500; }
+
+  .banner {
+    margin-top: 10px;
+    background: var(--ok-bg);
+    color: var(--ok);
+    border: 1px solid var(--ok);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 500;
+  }
+  .banner[hidden] { display: none; }
+  .banner { text-align: center; padding: 18px 16px 16px; animation: pop .6s cubic-bezier(.2, 1.4, .4, 1); }
+  .bn-title { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 700; line-height: 1.25; }
+  .bn-detail { margin-top: 4px; font-weight: 400; color: var(--ink); }
+  .bn-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .bn-actions [hidden] { display: none; }
+  @keyframes pop {
+    0% { transform: scale(.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ---------- stage ---------- */
+  .stage {
+    --dh: 30px;
+    --n: 4;
+    --base: 16px;
+    --headroom: 46px;
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 10px 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+  .col {
+    border-radius: 14px;
+    cursor: pointer;
+    padding: 0 2px 6px;
+    transition: background-color .15s;
+    outline-offset: -2px;
+  }
+  @media (hover: hover) { .col:hover { background: var(--tint); } }
+  .col.selected { background: var(--tint); box-shadow: 0 0 0 2px var(--accent) inset; }
+
+  .peg {
+    position: relative;
+    height: calc((var(--n) + 1) * var(--dh) + var(--base) + var(--headroom));
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-bottom: var(--base);
+  }
+  .peg::before { /* rod */
+    content: "";
+    position: absolute;
+    left: 50%; bottom: var(--base);
+    width: max(12px, calc(var(--dh) * .36)); transform: translateX(-50%);
+    height: calc((var(--n) + 1) * var(--dh) + 10px);
+    background: linear-gradient(90deg, var(--rod), color-mix(in srgb, var(--rod) 70%, #fff) 45%, var(--rod));
+    border-radius: 6px 6px 0 0;
+    z-index: 0;
+  }
+  .peg::after { /* base plank */
+    content: "";
+    position: absolute;
+    left: 2%; right: 2%; bottom: 0;
+    height: var(--base);
+    background: linear-gradient(180deg, var(--wood), var(--wood-dark));
+    border-radius: 8px;
+    z-index: 0;
+  }
+
+  .disk {
+    position: relative;
+    z-index: 1;
+    width: calc(var(--w) * 1%);
+    height: calc(var(--dh) - 3px);
+    margin-top: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, hsl(var(--h) 80% 68%), hsl(var(--h) 72% 50%));
+    box-shadow: 0 1px 0 hsl(var(--h) 90% 82% / .8) inset, 0 -2px 0 hsl(var(--h) 70% 36% / .55) inset, 0 2px 4px rgba(0,0,0,.25);
+    display: flex; align-items: center; justify-content: center;
+    color: hsl(var(--h) 80% 14%);
+    font-weight: 700;
+    font-size: .8rem;
+    transition: transform .16s ease-out;
+  }
+  .disk.lifted { transform: translateY(-22px); box-shadow: 0 1px 0 hsl(var(--h) 90% 82% / .8) inset, 0 -2px 0 hsl(var(--h) 70% 36% / .55) inset, 0 10px 14px rgba(0,0,0,.3); }
+  .disk.drop { animation: drop .28s cubic-bezier(.3, .7, .4, 1); }
+  .disk.shake { animation: shake .3s; }
+  .disk.cheer { animation: cheer .55s ease-in-out 3; animation-delay: calc(var(--i) * 90ms); }
+  .col.win { background: var(--ok-bg); box-shadow: 0 0 0 2px var(--ok) inset; animation: glow 1s ease-in-out 3; }
+  @keyframes cheer {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-18px) scale(1.08); }
+  }
+  @keyframes glow {
+    50% { box-shadow: 0 0 0 2px var(--ok) inset, 0 0 26px var(--ok); }
+  }
+  @keyframes drop {
+    from { transform: translateY(-44px); }
+    60% { transform: translateY(2px); }
+    to { transform: translateY(0); }
+  }
+  @keyframes shake {
+    0%, 100% { translate: 0 0; }
+    25% { translate: -6px 0; }
+    75% { translate: 6px 0; }
+  }
+
+  .label {
+    margin-top: 6px;
+    text-align: center;
+    font-weight: 700;
+    font-size: .95rem;
+  }
+  .label small { display: block; font-weight: 400; color: var(--muted); font-size: .76rem; min-height: 1.2em; }
+
+  .help { margin: 14px 2px 0; color: var(--muted); font-size: .85rem; }
+  kbd {
+    font: inherit; font-size: .8rem;
+    border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; background: var(--panel);
+  }
+
+  .levels { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .levels .lbl { font-weight: 500; font-size: .95rem; margin-right: 2px; }
+  .lv[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 700; }
+  .limit-note { display: none; }
+
+  .timebar { margin-top: 8px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  #timeFill { height: 100%; width: 100%; background: var(--t-green); border-radius: 999px; transition: width .25s linear, background-color .35s; }
+  .timebar.warn #timeFill { background: var(--t-yellow); }
+  .timebar.low #timeFill { background: var(--t-red); }
+  .timebar.low.live #timeFill { animation: urgent 1s ease-in-out infinite; }
+  @keyframes urgent { 50% { opacity: .55; } }
+  .stat.low .v { color: var(--t-red); }
+
+  .banner.fail { background: color-mix(in srgb, var(--bad) 12%, var(--panel)); color: var(--bad); border-color: var(--bad); }
+  .stage.over { opacity: .6; }
+  .stage.over .col { cursor: default; }
+  .btn:disabled[title] { cursor: not-allowed; }
+
+  /* ---------- touch devices ---------- */
+  @media (pointer: coarse) {
+    .btn { min-height: 44px; }
+    .btn.round { width: 44px; }
+    select.btn { font-size: 16px; } /* กัน iOS ซูมเองเมื่อแตะ select */
+  }
+
+  /* ---------- wide screens: one slim toolbar row ---------- */
+  @media (min-width: 940px) {
+    .app { max-width: 1100px; }
+    .controls { gap: 6px 16px; }
+    .settings { flex: 0 0 auto; gap: 6px 16px; }
+    .levels .lbl { display: none; }
+    .levels .btn { padding-left: 10px; padding-right: 10px; }
+    .btns { flex: 1 1 auto; border-top: 0; padding-top: 0; justify-content: space-between; gap: 6px 14px; }
+  }
+
+  /* ---------- tablets & large phones ---------- */
+  @media (min-width: 700px) and (min-height: 640px) {
+    .app { padding-top: 16px; }
+    .disk { font-size: .95rem; }
+    .label { font-size: 1.05rem; }
+  }
+
+  /* ---------- compact: phones portrait & short landscape ---------- */
+  @media (max-width: 560px), (orientation: landscape) and (max-height: 540px) {
+    .k-l { display: none; }
+    .k-s { display: inline; }
+    .stat { display: block; padding: 5px 8px; border-radius: 10px; }
+    .stat .k { font-size: .72rem; }
+    .stat .v { font-size: 1.08rem; }
+    .controls { padding: 10px; gap: 8px 10px; margin-top: 12px; }
+    .stepper .lbl, .levels .lbl { font-size: .85rem; }
+    .settings { gap: 8px 12px; }
+    .btns { border-top: 0; padding-top: 0; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .grp { display: contents; }
+    .btns { grid-template-columns: 1fr 1fr 1.25fr 1.15fr; }
+    .btns .btn { width: 100%; padding: 6px 2px; font-size: .84rem; min-height: 40px; white-space: nowrap; }
+    .ln-extra { display: none; }
+    .limit-note { font-size: .78rem; }
+    .status { margin-top: 10px; font-size: .92rem; }
+    .help .kbd-hint { display: none; }
+    .disk { font-size: .7rem; }
+    .banner { padding: 12px 12px 12px; }
+  }
+  @media (max-width: 560px) {
+    .app { padding: 12px max(12px, env(safe-area-inset-right, 0px)) 22px max(12px, env(safe-area-inset-left, 0px)); }
+    header p { display: none; }
+    header h1 { font-size: 1.45rem; }
+    .stats { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .stage { --headroom: 36px; padding: 10px 6px 8px; gap: 4px; margin-top: 8px; }
+    .status { min-height: 1.4em; }
+  }
+
+  /* ---------- landscape phones: HUD + controls left, board right ---------- */
+  @media (orientation: landscape) and (max-height: 540px) {
+    .app {
+      max-width: none;
+      display: grid; grid-template-columns: minmax(290px, 40%) 1fr; gap: 14px; align-items: start;
+      padding-top: 8px; padding-bottom: 8px;
+    }
+    .side { display: flex; flex-direction: column; }
+    header { order: 0; }
+    .stats { order: 1; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 6px; }
+    .timebar { order: 2; margin-top: 6px; }
+    .controls { order: 3; margin-top: 8px; padding: 8px; gap: 6px 8px; }
+    .status { order: 4; margin-top: 6px; }
+    .banner { order: 5; }
+    header h1 { font-size: 1.15rem; }
+    header p { display: none; }
+    .stat { display: block; padding: 3px 6px; }
+    .stat .k { font-size: .66rem; }
+    .stat .v { font-size: .98rem; }
+    .stepper .lbl { font-size: .8rem; }
+    .levels .lbl { display: none; }
+    .levels { gap: 4px; }
+    .levels .btn { min-height: 34px; padding: 3px 9px; font-size: .82rem; }
+    .btn.round { width: 34px; min-height: 34px; font-size: 1.1rem; }
+    .btns { grid-template-columns: 1fr 1fr 1.4fr 1fr; gap: 4px; }
+    .btns .btn { min-height: 34px; font-size: .76rem; padding: 3px 1px; }
+    select.btn { font-size: 14px; }
+    .limit-note { display: none; }
+    .stage { --headroom: 34px; margin-top: 0; }
+    .main { position: sticky; top: env(safe-area-inset-top, 0px); }
+    .help { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .disk, .disk.drop, .disk.shake, .disk.cheer, .col.win, .banner { animation: none !important; transition: none !important; }
+    #timeFill { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="side">
+  <header>
+    <h1>Tower of Hanoi</h1>
+    <p>ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C โดยย้ายได้ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก</p>
+  </header>
+
+  <section class="controls" aria-label="ตั้งค่าเกม">
+    <div class="settings">
+      <div class="stepper">
+        <span class="lbl" id="diskLbl">จำนวนแผ่น</span>
+        <button class="btn round" id="minus" aria-label="ลดจำนวนแผ่น">−</button>
+        <output id="nOut" aria-labelledby="diskLbl">4</output>
+        <button class="btn round" id="plus" aria-label="เพิ่มจำนวนแผ่น">+</button>
+      </div>
+      <div class="levels" role="group" aria-label="ระดับความยาก">
+        <span class="lbl">ระดับ</span>
+        <button class="btn lv" data-lv="easy" aria-pressed="true">Easy</button>
+        <button class="btn lv" data-lv="normal" aria-pressed="false">Normal</button>
+        <button class="btn lv" data-lv="advanced" aria-pressed="false">Advanced</button>
+      </div>
+    </div>
+    <div class="btns">
+      <div class="grp">
+        <button class="btn" id="undo">ย้อนกลับ</button>
+        <button class="btn" id="reset">เริ่มใหม่</button>
+      </div>
+      <div class="grp">
+        <button class="btn primary" id="solve">ดูเฉลย</button>
+        <select class="btn" id="speed" aria-label="ความเร็วเฉลย" title="ความเร็วเฉลย">
+          <option value="1600">⏱ ช้า</option>
+          <option value="1000" selected>⏱ ปกติ</option>
+          <option value="500">⏱ เร็ว</option>
+          <option value="150">⏱ เร็วมาก</option>
+        </select>
+      </div>
+    </div>
+    <p class="limit-note" id="limitNote"></p>
+  </section>
+
+  <section class="stats" aria-label="สถิติ">
+    <div class="stat"><div class="k"><span class="k-l">จำนวนครั้งที่ย้าย</span><span class="k-s">ย้ายแล้ว</span></div><div class="v" id="moves">0</div></div>
+    <div class="stat"><div class="k"><span class="k-l">น้อยที่สุดที่เป็นไปได้</span><span class="k-s">ขั้นต่ำ</span></div><div class="v" id="minMoves">15</div></div>
+    <div class="stat"><div class="k"><span class="k-l">เวลาที่เหลือ</span><span class="k-s">เวลา</span></div><div class="v" id="time">00:00</div></div>
+    <div class="stat"><div class="k"><span class="k-l">สถิติดีที่สุด</span><span class="k-s">ดีที่สุด</span></div><div class="v" id="best">–</div></div>
+  </section>
+  <div class="timebar" id="timebar" aria-hidden="true"><div id="timeFill"></div></div>
+
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+  <div class="banner" id="banner" hidden role="status">
+    <div class="bn-title" id="bnTitle"></div>
+    <div class="bn-detail" id="bnDetail"></div>
+    <div class="bn-actions">
+      <button class="btn primary" id="again">เล่นอีกครั้ง</button>
+      <button class="btn" id="harder">เพิ่มความท้าทาย</button>
+      <button class="btn primary" id="showSolve" hidden>ดูเฉลย</button>
+    </div>
+  </div>
+
+  </div>
+  <div class="main">
+  <div class="stage" id="stage"></div>
+
+  <p class="help">
+    ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้ง
+    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>R</kbd> เริ่มใหม่</span>
+  </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MIN_N = 1, MAX_N = 10;
+  var NAMES = ['A', 'B', 'C'];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var stage = $('#stage'), statusEl = $('#status'), banner = $('#banner');
+
+  var LEVELS = {
+    easy:     { name: 'Easy',     per: 4,   base: 20 },
+    normal:   { name: 'Normal',   per: 2.5, base: 15 },
+    advanced: { name: 'Advanced', per: 1.6, base: 10 }
+  };
+  var UNLOCK_FAILS = 3;
+  var level = 'easy', fails = 0, over = false;
+  var n = 4;
+  var lastDh = 0;
+  var pendingFlight = null;
+  var winPending = false, winInfo = null, winToken = 0, confetti = null;
+  var pegs, moves, history, started, startTime, elapsed, won, selected, solving, solveTimer, solveList, solveIdx, lastDrop, shakePeg;
+
+  /* ---------- storage (guarded) ---------- */
+  function loadPrefs() {
+    try {
+      var lv = localStorage.getItem('hanoi-level');
+      if (lv && LEVELS[lv]) level = lv;
+      var f = parseInt(localStorage.getItem('hanoi-fails'), 10);
+      if (f > 0) fails = Math.min(f, 99);
+    } catch (e) {}
+  }
+  function savePrefs() {
+    try {
+      localStorage.setItem('hanoi-level', level);
+      localStorage.setItem('hanoi-fails', String(fails));
+    } catch (e) {}
+  }
+  function getBest(k) {
+    try { var v = localStorage.getItem('hanoi-best-' + k); return v ? parseInt(v, 10) : null; } catch (e) { return null; }
+  }
+  function setBest(k, v) {
+    try { localStorage.setItem('hanoi-best-' + k, String(v)); } catch (e) {}
+  }
+
+  /* ---------- helpers ---------- */
+  function fmtTime(ms) {
+    var s = Math.floor(ms / 1000);
+    var m = Math.floor(s / 60);
+    s = s % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function diskHeight() {
+    var base = n <= 5 ? 30 : n <= 7 ? 26 : n <= 9 ? 22 : 20;
+    var w = window.innerWidth, h = window.innerHeight;
+    if (w >= 700 && h >= 640) {                        // แท็บเล็ต/จอใหญ่: ขยายกระดานให้เต็มความสูงที่เหลือ
+      base = Math.max(base + 6, Math.min(44, Math.floor((h - 400) / (n + 1))));
+    }
+    if (w > h && h <= 540) {                           // มือถือแนวนอน: ให้กระดานพอดีความสูงจอ
+      var fit = Math.floor((h - 150) / (n + 1));
+      base = Math.max(12, Math.min(base, fit));
+    }
+    return base;
+  }
+  function setStatus(msg, bad) {
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('bad', !!bad);
+  }
+  function minMoves() { return Math.pow(2, n) - 1; }
+  function limitMs() {
+    var L = LEVELS[level];
+    return (Math.ceil(minMoves() * L.per) + L.base) * 1000;
+  }
+  function startClock() {
+    if (!started) { started = true; startTime = Date.now(); }
+  }
+
+  /* ---------- flight animation ---------- */
+  function topDiskEl(i) {
+    var peg = stage.children[i] && stage.children[i].querySelector('.peg');
+    return peg ? peg.lastElementChild : null;
+  }
+  function captureFlight(from, to) {
+    var el = topDiskEl(from);
+    pendingFlight = el ? { rect: el.getBoundingClientRect(), to: to } : null;
+  }
+  function flightDuration() {
+    if (solving) return Math.min(900, parseInt($('#speed').value, 10) * 0.8);
+    return 450;
+  }
+  function playFlight() {
+    var f = pendingFlight;
+    pendingFlight = null;
+    if (!f || !f.rect || !f.rect.width) return null;
+    if (reducedMotion()) return null;
+    var el = topDiskEl(f.to);
+    if (!el || !el.animate) return null;
+    var now = el.getBoundingClientRect();
+    var dx = f.rect.left - now.left;
+    var dy = f.rect.top - now.top;
+    var apex = Math.min(dy, 0) - 40;
+    el.style.zIndex = 5;
+    var anim = el.animate([
+      { transform: 'translate(' + dx + 'px,' + dy + 'px)', offset: 0 },
+      { transform: 'translate(' + dx + 'px,' + apex + 'px)', offset: 0.3, easing: 'ease-in-out' },
+      { transform: 'translate(0px,' + apex + 'px)', offset: 0.7, easing: 'ease-in-out' },
+      { transform: 'translate(0px,0px)', offset: 1 }
+    ], { duration: flightDuration(), easing: 'ease-out', fill: 'backwards' });
+    anim.onfinish = anim.oncancel = function () { el.style.zIndex = ''; };
+    return anim;
+  }
+  function reducedMotion() {
+    return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  /* ---------- game ---------- */
+  function init(newN) {
+    stopSolve();
+    if (typeof newN === 'number') n = newN;
+    pegs = [[], [], []];
+    for (var i = n; i >= 1; i--) pegs[0].push(i);
+    moves = 0; history = []; started = false; startTime = 0; elapsed = 0;
+    won = false; over = false; selected = null; lastDrop = null; shakePeg = null;
+    resetCelebration();
+    setStatus('แตะเสาเพื่อหยิบแผ่น · เวลาเริ่มนับเมื่อหยิบแผ่นแรก');
+    render();
+  }
+
+  function canMove(from, to) {
+    if (from === to) return false;
+    var src = pegs[from], dst = pegs[to];
+    if (!src.length) return false;
+    if (!dst.length) return true;
+    return src[src.length - 1] < dst[dst.length - 1];
+  }
+
+  function doMove(from, to, auto) {
+    captureFlight(from, to);
+    var d = pegs[from].pop();
+    pegs[to].push(d);
+    moves++;
+    history.push([from, to]);
+    lastDrop = to;
+    selected = null;
+    if (!auto) startClock();
+    if (pegs[2].length === n) finish(auto);
+  }
+
+  function finish(auto) {
+    won = true;
+    if (started) elapsed = Date.now() - startTime;
+    var min = minMoves(), title, detail, perfect = false;
+    if (auto) {
+      title = 'เฉลยเสร็จแล้ว';
+      detail = 'ใช้ ' + moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดสำหรับ ' + n + ' แผ่น';
+    } else {
+      var best = getBest(n);
+      var newRecord = best === null || moves < best;
+      if (newRecord) setBest(n, moves);
+      perfect = moves === min;
+      title = perfect ? '🏆 สมบูรณ์แบบ!' : '🎉 สำเร็จแล้ว!';
+      detail = perfect
+        ? 'ย้ายครบใน ' + moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดที่เป็นไปได้'
+        : 'ใช้ ' + moves + ' ครั้ง (น้อยที่สุดที่เป็นไปได้คือ ' + min + ' ครั้ง)';
+      detail += ' · ใช้เวลา ' + fmtTime(elapsed) + ' จาก ' + fmtTime(limitMs()) + ' (' + LEVELS[level].name + ')';
+      if (newRecord) detail += ' · สถิติใหม่ของ ' + n + ' แผ่น';
+    }
+    // เก็บผลไว้ก่อน แล้วค่อยแสดงหลังจากแผ่นสุดท้ายวางเสร็จ (ดู render)
+    winInfo = { title: title, detail: detail, auto: !!auto, perfect: perfect };
+    winPending = true;
+    setStatus('');
+  }
+
+  /* ---------- celebration ---------- */
+  function resetCelebration() {
+    winToken++;
+    winPending = false;
+    winInfo = null;
+    banner.hidden = true;
+    banner.classList.remove('fail');
+    stopConfetti();
+  }
+  function celebrate() {
+    if (!won || !winInfo) return;
+    var info = winInfo;
+    $('#bnTitle').textContent = info.title;
+    $('#bnDetail').textContent = info.detail;
+    $('#again').textContent = info.auto ? 'ลองเล่นเอง' : 'เล่นอีกครั้ง';
+    $('#harder').hidden = info.auto || n >= MAX_N;
+    $('#harder').textContent = 'ท้าทายต่อ ' + (n + 1) + ' แผ่น';
+    $('#showSolve').hidden = true;
+    banner.classList.remove('fail');
+    banner.hidden = false;
+    showBanner();
+    banner.style.animation = 'none';
+    void banner.offsetWidth;
+    banner.style.animation = '';
+
+    var col = stage.children[2];
+    if (col) {
+      col.classList.add('win');
+      var ds = col.querySelectorAll('.disk');
+      for (var i = 0; i < ds.length; i++) {
+        ds[i].style.setProperty('--i', i);
+        ds[i].classList.add('cheer');
+      }
+    }
+    if (!info.auto && !reducedMotion()) launchConfetti();
+  }
+
+  function showBanner() {
+    try { banner.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+  function timeUp() {
+    over = true;
+    selected = null;
+    winToken++;
+    fails = Math.min(fails + 1, 99);
+    savePrefs();
+    var unlocked = fails >= UNLOCK_FAILS;
+    var min = minMoves();
+    render();
+    $('#bnTitle').textContent = '⏰ หมดเวลา!';
+    $('#bnDetail').textContent =
+      'ระดับ ' + LEVELS[level].name + ' กำหนด ' + fmtTime(limitMs()) + ' · ย้ายไปได้ ' + moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + min + ' ครั้ง) · ' +
+      (unlocked
+        ? 'ล้มเหลวสะสมครบ ' + UNLOCK_FAILS + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว'
+        : 'ล้มเหลวสะสม ' + fails + '/' + UNLOCK_FAILS + ' ครั้ง อีก ' + (UNLOCK_FAILS - fails) + ' ครั้งจะปลดล็อกเฉลย');
+    $('#again').textContent = 'ลองใหม่';
+    $('#harder').hidden = true;
+    $('#showSolve').hidden = !unlocked;
+    banner.classList.add('fail');
+    banner.hidden = false;
+    showBanner();
+    banner.style.animation = 'none';
+    void banner.offsetWidth;
+    banner.style.animation = '';
+    setStatus('');
+  }
+
+  function stopConfetti() {
+    if (!confetti) return;
+    cancelAnimationFrame(confetti.raf);
+    clearTimeout(confetti.t);
+    if (confetti.cv.parentNode) confetti.cv.parentNode.removeChild(confetti.cv);
+    confetti = null;
+  }
+  function launchConfetti() {
+    stopConfetti();
+    var cv = document.createElement('canvas');
+    cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50';
+    document.body.appendChild(cv);
+    var dpr = window.devicePixelRatio || 1;
+    var W = window.innerWidth, H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var parts = [];
+    var scale = Math.max(0.7, Math.min(1.3, H / 800));
+
+    function spawn(x, y, count, aMin, aMax, vMin, vMax) {
+      for (var i = 0; i < count; i++) {
+        var a = (aMin + Math.random() * (aMax - aMin)) * Math.PI / 180;
+        var v = (vMin + Math.random() * (vMax - vMin)) * scale;
+        parts.push({
+          x: x, y: y,
+          vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+          w: 6 + Math.random() * 6, h: 3 + Math.random() * 4,
+          rot: Math.random() * 6.28, vr: (Math.random() - .5) * .4,
+          wob: Math.random() * 6.28,
+          hue: Math.floor(Math.random() * 360),
+          round: Math.random() < .25
+        });
+      }
+    }
+    // ปืนใหญ่ซ้าย-ขวาจากขอบล่าง
+    spawn(W * 0.08, H, 70, -80, -50, 14, 28);
+    spawn(W * 0.92, H, 70, -130, -100, 14, 28);
+    var st = { cv: cv, raf: 0, t: 0 };
+    confetti = st;
+    st.t = setTimeout(function () {
+      // รอบสองระเบิดกลางจอ
+      spawn(W * 0.5, H * 0.35, 90, 0, 360, 4, 14);
+    }, 450);
+
+    var last = performance.now(), t0 = last;
+    function frame(now) {
+      var dt = Math.min(3, (now - last) / 16.67);
+      last = now;
+      ctx.clearRect(0, 0, W, H);
+      var alive = 0;
+      for (var i = 0; i < parts.length; i++) {
+        var q = parts[i];
+        q.vy += 0.38 * dt * scale;
+        q.vx *= Math.pow(0.992, dt);
+        q.vy *= Math.pow(0.992, dt);
+        q.x += q.vx * dt;
+        q.y += q.vy * dt;
+        q.rot += q.vr * dt;
+        q.wob += 0.18 * dt;
+        if (q.y < H + 30) alive++;
+        ctx.save();
+        ctx.translate(q.x, q.y);
+        ctx.rotate(q.rot);
+        ctx.scale(1, Math.cos(q.wob));
+        ctx.fillStyle = 'hsl(' + q.hue + ' 85% 58%)';
+        if (q.round) { ctx.beginPath(); ctx.arc(0, 0, q.w / 2.2, 0, 6.283); ctx.fill(); }
+        else ctx.fillRect(-q.w / 2, -q.h / 2, q.w, q.h);
+        ctx.restore();
+      }
+      if (now - t0 > 6000 || (alive === 0 && now - t0 > 900)) { stopConfetti(); return; }
+      st.raf = requestAnimationFrame(frame);
+    }
+    st.raf = requestAnimationFrame(frame);
+  }
+
+  function select(i) {
+    if (solving || won || over) return;
+    if (selected === null) {
+      if (!pegs[i].length) { setStatus('เสา ' + NAMES[i] + ' ไม่มีแผ่น เลือกเสาที่มีแผ่นก่อน', true); return; }
+      selected = i;
+      startClock();
+      setStatus('หยิบแผ่นหมายเลข ' + pegs[i][pegs[i].length - 1] + ' จากเสา ' + NAMES[i] + ' แล้ว แตะเสาปลายทางเพื่อวาง');
+      render();
+      return;
+    }
+    if (selected === i) {
+      selected = null;
+      setStatus('วางแผ่นกลับที่เดิมแล้ว');
+      render();
+      return;
+    }
+    if (!canMove(selected, i)) {
+      shakePeg = selected;
+      setStatus('วางแผ่นใหญ่ทับแผ่นเล็กไม่ได้ เลือกเสาอื่น', true);
+      render();
+      return;
+    }
+    var from = selected;
+    doMove(from, i, false);
+    if (!won) setStatus('ย้ายจากเสา ' + NAMES[from] + ' ไปเสา ' + NAMES[i] + ' แล้ว');
+    render();
+  }
+
+  function undo() {
+    if (solving || over || won || !history.length) return;
+    var m = history.pop();
+    captureFlight(m[1], m[0]);
+    var d = pegs[m[1]].pop();
+    pegs[m[0]].push(d);
+    moves = Math.max(0, moves - 1);
+    won = false; resetCelebration(); selected = null; lastDrop = null;
+    setStatus('ย้อนกลับ 1 ครั้งแล้ว');
+    render();
+  }
+
+  /* ---------- auto solve ---------- */
+  function buildSolution(k, a, b, c, out) {
+    if (k === 0) return;
+    buildSolution(k - 1, a, c, b, out);
+    out.push([a, b]);
+    buildSolution(k - 1, c, b, a, out);
+  }
+  function startSolve() {
+    if (fails < UNLOCK_FAILS) return;
+    fails = 0;
+    savePrefs();
+    init();
+    solving = true;
+    solveList = []; buildSolution(n, 0, 2, 1, solveList);
+    solveIdx = 0;
+    setStatus('กำลังเฉลย ' + n + ' แผ่น ต้องย้าย ' + solveList.length + ' ครั้ง');
+    runSolveTimer();
+    render();
+  }
+  function runSolveTimer() {
+    clearInterval(solveTimer);
+    solveTimer = setInterval(stepSolve, parseInt($('#speed').value, 10));
+  }
+  function stepSolve() {
+    if (solveIdx >= solveList.length) { stopSolve(); updateButtons(); return; }
+    var m = solveList[solveIdx++];
+    doMove(m[0], m[1], true);
+    render();
+    // อย่าเรนเดอร์ซ้ำหลังย้ายครั้งสุดท้าย เพราะจะตัดแอนิเมชันที่กำลังเล่นอยู่
+    if (won) { stopSolve(); updateButtons(); }
+  }
+  function stopSolve() {
+    clearInterval(solveTimer);
+    solveTimer = null;
+    solving = false;
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    var focusIdx = -1;
+    var ae = document.activeElement;
+    if (ae && ae.classList && ae.classList.contains('col')) focusIdx = parseInt(ae.dataset.i, 10);
+
+    stage.classList.toggle('over', over);
+    var dh = diskHeight();
+    lastDh = dh;
+    stage.style.setProperty('--dh', dh + 'px');
+    stage.style.setProperty('--n', n);
+    stage.innerHTML = '';
+
+    pegs.forEach(function (p, i) {
+      var col = document.createElement('div');
+      col.className = 'col' + (selected === i ? ' selected' : '');
+      col.dataset.i = i;
+      col.tabIndex = 0;
+      col.setAttribute('role', 'button');
+      col.setAttribute('aria-label', 'เสา ' + NAMES[i] + ' มี ' + p.length + ' แผ่น' + (i === 2 ? ' (เสาเป้าหมาย)' : ''));
+
+      var peg = document.createElement('div');
+      peg.className = 'peg';
+      p.forEach(function (size, idx) {
+        var d = document.createElement('div');
+        var isTop = idx === p.length - 1;
+        d.className = 'disk';
+        var t = n === 1 ? 0.5 : (size - 1) / (n - 1);
+        d.style.setProperty('--w', n === 1 ? 60 : (26 + t * 68).toFixed(1));
+        d.style.setProperty('--h', Math.round(8 + t * 242));
+        d.textContent = size;
+        if (isTop && selected === i) d.classList.add('lifted');
+        if (isTop && shakePeg === i) d.classList.add('shake');
+        peg.appendChild(d);
+      });
+      col.appendChild(peg);
+
+      var label = document.createElement('div');
+      label.className = 'label';
+      label.innerHTML = 'เสา ' + NAMES[i] + '<small>' + (i === 0 ? 'จุดเริ่มต้น' : i === 2 ? 'เป้าหมาย' : '') + '</small>';
+      col.appendChild(label);
+
+      stage.appendChild(col);
+    });
+
+    lastDrop = null; shakePeg = null;
+    var flight = playFlight();
+    if (winPending) {
+      winPending = false;
+      var tok = winToken;
+      var go = function () { if (tok === winToken) celebrate(); };
+      if (flight) flight.addEventListener('finish', go);
+      else go();
+    }
+    if (focusIdx >= 0) stage.children[focusIdx].focus({ preventScroll: true });
+
+    $('#nOut').textContent = n;
+    $('#moves').textContent = moves;
+    $('#minMoves').textContent = minMoves();
+    var b = getBest(n);
+    $('#best').textContent = b === null ? '–' : b;
+    var L = LEVELS[level];
+    $('#limitNote').innerHTML = L.name + ' · จำกัด ' + fmtTime(limitMs()) + '<span class="ln-extra"> (นับเมื่อหยิบแผ่นแรก)</span> · หมดเวลาสะสม ' + Math.min(fails, UNLOCK_FAILS) + '/' + UNLOCK_FAILS;
+    updateTime();
+    updateButtons();
+  }
+
+  function updateButtons() {
+    $('#minus').disabled = n <= MIN_N;
+    $('#plus').disabled = n >= MAX_N;
+    $('#undo').disabled = solving || over || won || !history.length;
+    var sb = $('#solve');
+    if (solving) {
+      sb.textContent = 'หยุดเฉลย'; sb.disabled = false; sb.removeAttribute('title');
+    } else if (fails >= UNLOCK_FAILS) {
+      sb.textContent = 'ดูเฉลย'; sb.disabled = false; sb.removeAttribute('title');
+    } else {
+      sb.textContent = '🔒 เฉลย ' + fails + '/' + UNLOCK_FAILS; sb.disabled = true;
+      sb.title = 'หมดเวลาครบ ' + UNLOCK_FAILS + ' ครั้งจึงจะปลดล็อกเฉลย';
+    }
+    var lvs = document.querySelectorAll('.lv');
+    for (var i = 0; i < lvs.length; i++) {
+      lvs[i].setAttribute('aria-pressed', lvs[i].dataset.lv === level ? 'true' : 'false');
+    }
+  }
+
+  function updateTime() {
+    var lim = limitMs(), rem, pct;
+    var bar = $('#timebar'), stat = $('#time').parentNode;
+    if (solving) {
+      $('#time').textContent = '—';
+      $('#timeFill').style.width = '100%';
+      bar.classList.remove('warn', 'low', 'live'); stat.classList.remove('low');
+      return;
+    }
+    if (over) rem = 0;
+    else if (won) rem = Math.max(0, lim - elapsed);
+    else if (started) rem = Math.max(0, lim - (Date.now() - startTime));
+    else rem = lim;
+    pct = rem / lim * 100;
+    $('#time').textContent = fmtTime(Math.ceil(rem / 1000) * 1000);
+    $('#timeFill').style.width = pct.toFixed(1) + '%';
+    // สามช่วง: เขียว (เหลือ > 50%), เหลือง (20–50%), แดง (≤ 20%)
+    var active = started && !won && !over;
+    var low = pct <= 20;
+    bar.classList.toggle('low', low);
+    bar.classList.toggle('warn', !low && pct <= 50);
+    bar.classList.toggle('live', active);
+    stat.classList.toggle('low', low);
+  }
+
+  function tick() {
+    if (solving) return;
+    updateTime();
+    if (started && !won && !over && Date.now() - startTime >= limitMs()) timeUp();
+  }
+
+  /* ---------- events ---------- */
+  stage.addEventListener('click', function (e) {
+    var col = e.target.closest('.col');
+    if (col) select(parseInt(col.dataset.i, 10));
+  });
+  stage.addEventListener('keydown', function (e) {
+    var col = e.target.closest && e.target.closest('.col');
+    if (col && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      select(parseInt(col.dataset.i, 10));
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'select' || tag === 'input') return;
+    var k = e.key.toLowerCase();
+    if (k === '1' || k === '2' || k === '3') select(parseInt(k, 10) - 1);
+    else if (k === 'a') select(0);
+    else if (k === 'b') select(1);
+    else if (k === 'c') select(2);
+    else if (k === 'z') undo();
+    else if (k === 'r') init();
+  });
+
+  $('#again').addEventListener('click', function () { init(); });
+  $('#showSolve').addEventListener('click', function () { startSolve(); });
+  document.querySelector('.levels').addEventListener('click', function (e) {
+    var b = e.target.closest('.lv');
+    if (!b || b.dataset.lv === level) return;
+    level = b.dataset.lv;
+    savePrefs();
+    init();
+  });
+  $('#harder').addEventListener('click', function () { if (n < MAX_N) init(n + 1); });
+  $('#minus').addEventListener('click', function () { if (n > MIN_N) init(n - 1); });
+  $('#plus').addEventListener('click', function () { if (n < MAX_N) init(n + 1); });
+  $('#reset').addEventListener('click', function () { init(); });
+  $('#undo').addEventListener('click', undo);
+  $('#solve').addEventListener('click', function () {
+    if (solving) { stopSolve(); setStatus('หยุดเฉลยแล้ว แตะ "เริ่มใหม่" เพื่อเล่นเอง'); render(); }
+    else startSolve();
+  });
+  $('#speed').addEventListener('change', function () { if (solving) runSolveTimer(); });
+
+  setInterval(tick, 200);
+
+  var resizeTimer;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { if (diskHeight() !== lastDh) render(); }, 150);
+  }
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', onResize);
+
+  loadPrefs();
+  init(4);
+})();
+</script>
+</body>
+</html>
