@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Tower of Hanoi">
 <title>Tower of Hanoi – หอคอยฮานอย</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,12 +22,18 @@
     --ink: #1D2B36;
     --muted: #5B6C7A;
     --line: #C5D3DE;
-    --accent: #D9481F;
+    --accent: #0E8F8A;
     --accent-ink: #FFFFFF;
-    --wood: #C79A66;
-    --wood-dark: #8F623A;
-    --rod: #A87848;
-    --tint: rgba(217, 72, 31, .10);
+    --c-solve: #D6336C; --c-solve-ink: #FFFFFF;
+    --c-again: #0E8F8A; --c-again-ink: #FFFFFF;
+    --c-lv1: #2E9E5B; --c-lv1-ink: #FFFFFF;
+    --c-lv2: #1E88E5; --c-lv2-ink: #FFFFFF;
+    --c-lv3: #E0B000; --c-lv3-ink: #1D1500;
+    --c-lv4: #D93A3A; --c-lv4-ink: #FFFFFF;
+    --wood: #C9A877;
+    --wood-dark: #8A6A41;
+    --rod: #BC9A68;
+    --tint: rgba(14, 143, 138, .10);
     --ok: #1B7F54;
     --t-green: #1FA55A;
     --t-yellow: #F2B01E;
@@ -39,12 +49,18 @@
       --ink: #E8EFF4;
       --muted: #93A5B4;
       --line: #324656;
-      --accent: #FF7A4D;
-      --accent-ink: #1A1008;
-      --wood: #6E4F33;
-      --wood-dark: #4A3422;
-      --rod: #8B6340;
-      --tint: rgba(255, 122, 77, .14);
+      --accent: #3FD6CB;
+      --accent-ink: #06201E;
+      --c-solve: #FF6B9A; --c-solve-ink: #2A0512;
+      --c-again: #3FD6CB; --c-again-ink: #06201E;
+      --c-lv1: #4BDB88; --c-lv1-ink: #06210F;
+      --c-lv2: #5AB0FF; --c-lv2-ink: #04182B;
+      --c-lv3: #FFD23F; --c-lv3-ink: #1D1500;
+      --c-lv4: #FF6B6B; --c-lv4-ink: #2A0707;
+      --wood: #C4A272;
+      --wood-dark: #7A5C38;
+      --rod: #BE9C6C;
+      --tint: rgba(63, 214, 203, .14);
       --ok: #6FD6A3;
       --t-green: #34D27B;
       --t-yellow: #FFC83D;
@@ -60,12 +76,18 @@
     --ink: #E8EFF4;
     --muted: #93A5B4;
     --line: #324656;
-    --accent: #FF7A4D;
-    --accent-ink: #1A1008;
-    --wood: #6E4F33;
-    --wood-dark: #4A3422;
-    --rod: #8B6340;
-    --tint: rgba(255, 122, 77, .14);
+    --accent: #3FD6CB;
+    --accent-ink: #06201E;
+    --c-solve: #FF6B9A; --c-solve-ink: #2A0512;
+    --c-again: #3FD6CB; --c-again-ink: #06201E;
+    --c-lv1: #4BDB88; --c-lv1-ink: #06210F;
+    --c-lv2: #5AB0FF; --c-lv2-ink: #04182B;
+    --c-lv3: #FFD23F; --c-lv3-ink: #1D1500;
+    --c-lv4: #FF6B6B; --c-lv4-ink: #2A0707;
+    --wood: #C4A272;
+    --wood-dark: #7A5C38;
+    --rod: #BE9C6C;
+    --tint: rgba(63, 214, 203, .14);
     --ok: #6FD6A3;
     --t-green: #34D27B;
     --t-yellow: #FFC83D;
@@ -265,7 +287,7 @@
   @media (hover: hover) { .col:hover { background: var(--tint); } }
   /* เสา C = เป้าหมาย: แกนเสาเขียว + แป้นฐานเขียวเข้ม + ธง + ป้าย "เป้าหมาย" */
   .col.goal {
-    --rod: color-mix(in srgb, var(--t-green) 80%, #000);
+    --rod: color-mix(in srgb, var(--t-green) 58%, #000);
     --wood: color-mix(in srgb, var(--t-green) 52%, #000);
     --wood-dark: color-mix(in srgb, var(--t-green) 34%, #000);
   }
@@ -292,42 +314,81 @@
     align-items: center;
     padding-bottom: var(--base);
   }
-  .peg::before { /* rod */
+  .peg::before { /* rod: เสาหินทรงกระบอกขัดเงา */
     content: "";
     position: absolute;
     left: 50%; bottom: var(--base);
     width: max(12px, calc(var(--dh) * .36)); transform: translateX(-50%);
     height: calc((var(--n) + 1) * var(--dh) + 10px);
-    background: linear-gradient(90deg, var(--rod), color-mix(in srgb, var(--rod) 70%, #fff) 45%, var(--rod));
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0) 14%, rgba(255,255,255,.55) 27%, rgba(255,255,255,0) 40%),
+      linear-gradient(90deg, color-mix(in srgb, var(--rod) 45%, #000) 0%, color-mix(in srgb, var(--rod) 78%, #fff) 30%, var(--rod) 58%, color-mix(in srgb, var(--rod) 48%, #000) 100%);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 2px 0 5px rgba(0,0,0,.3);
     border-radius: 6px 6px 0 0;
     z-index: 0;
   }
-  .peg::after { /* base plank */
+  .peg::after { /* base: แท่นหินขัดเงา */
     content: "";
     position: absolute;
     left: 2%; right: 2%; bottom: 0;
     height: var(--base);
-    background: linear-gradient(180deg, var(--wood), var(--wood-dark));
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.2) 46%, rgba(255,255,255,0) 47%),
+      linear-gradient(180deg, var(--wood), var(--wood-dark));
+    box-shadow: 0 1.5px 0 rgba(255,255,255,.55) inset, 0 -2px 3px rgba(0,0,0,.45) inset, 0 3px 5px rgba(0,0,0,.35);
     border-radius: 8px;
     z-index: 0;
   }
 
+  /* แผ่นหินขัดเงา: ชั้นบนสุดคือแสงสะท้อน, ถัดมาเป็นลายเส้นหิน (อ่อน/เข้ม), ล่างสุดเป็นสีหินไล่เฉด */
   .disk {
+    --stone-light: hsl(var(--h) 88% 44%);
+    --stone-mid: hsl(var(--h) 92% 30%);
+    --stone-dark: hsl(var(--h) 90% 16%);
+    --bevel: 0 1.5px 0 hsl(var(--h) 100% 78% / .85) inset,
+             0 -3px 5px hsl(var(--h) 90% 8% / .7) inset,
+             0 0 0 1px hsl(var(--h) 60% 22% / .55) inset;
     position: relative;
     z-index: 1;
     width: calc(var(--w) * 1%);
     height: calc(var(--dh) - 3px);
     margin-top: 3px;
     border-radius: 999px;
-    background: linear-gradient(180deg, hsl(var(--h) 80% 68%), hsl(var(--h) 72% 50%));
-    box-shadow: 0 1px 0 hsl(var(--h) 90% 82% / .8) inset, 0 -2px 0 hsl(var(--h) 70% 36% / .55) inset, 0 2px 4px rgba(0,0,0,.25);
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 18% 30% at 15% 24%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
+      radial-gradient(ellipse 40% 30% at 50% 108%, hsl(var(--h) 100% 62% / .55), rgba(255,255,255,0) 100%),
+      linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.24) 46%, rgba(255,255,255,0) 47%),
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.9%20.9%27%20numOctaves=%272%27%20seed=%272%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%201%200%200%200%200%201%200%200%200%200%201%203.2%200%200%200%20-2.05%27/%3E%3C/filter%3E%3Cg%20transform=%27rotate%280%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.013%20.03%27%20numOctaves=%273%27%20seed=%2731%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%201%200%200%200%200%201%200%200%200%200%201%201%200%200%200%200%27/%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type=%27table%27%20tableValues=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.114%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%27/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg%20transform=%27rotate%28-28%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.010%20.024%27%20numOctaves=%273%27%20seed=%278%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%201%200%200%200%200%201%200%200%200%200%201%201%200%200%200%200%27/%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type=%27table%27%20tableValues=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.75%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%27/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg%20transform=%27rotate%28-28%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.008%20.02%27%20numOctaves=%274%27%20seed=%2741%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%201%200%200%200%200%27/%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type=%27table%27%20tableValues=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.0%200.2%200.4%200.2%200.0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%27/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg%20transform=%27rotate%28-28%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.012%20.026%27%20numOctaves=%273%27%20seed=%2714%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%201%200%200%200%200%27/%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type=%27table%27%20tableValues=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.029%200.75%200.029%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%27/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg%20transform=%27rotate%28-28%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27320%27%20height=%2764%27%20preserveAspectRatio=%27xMidYMid%20slice%27%3E%3Cfilter%20id=%27f%27%20x=%270%27%20y=%270%27%20width=%27100%25%27%20height=%27100%25%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%27.007%20.022%27%20numOctaves=%273%27%20seed=%275%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%200%200%200%200%200%200%200%200%200%200%200%201.3%200%200%200%20-0.55%27/%3E%3C/filter%3E%3Cg%20transform=%27rotate%28-28%20160%2032%29%27%3E%3Crect%20x=%27-500%27%20y=%27-500%27%20width=%271300%27%20height=%271300%27%20filter=%27url%28%23f%29%27/%3E%3C/g%3E%3C/svg%3E") 0 0 / cover,
+      linear-gradient(180deg, var(--stone-light) 0%, var(--stone-mid) 52%, var(--stone-dark) 100%);
+    box-shadow: var(--bevel), 0 2px 4px rgba(0,0,0,.35);
     display: flex; align-items: center; justify-content: center;
-    color: hsl(var(--h) 80% 14%);
-    font-weight: 700;
-    font-size: .8rem;
+    color: hsl(var(--h) 90% 93%);
+    text-shadow: 0 1px 1px hsl(var(--h) 80% 8% / .85), 0 0 4px hsl(var(--h) 80% 10% / .5);
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: .02em;
     transition: transform .16s ease-out;
   }
-  .disk.lifted { transform: translateY(-22px); box-shadow: 0 1px 0 hsl(var(--h) 90% 82% / .8) inset, 0 -2px 0 hsl(var(--h) 70% 36% / .55) inset, 0 10px 14px rgba(0,0,0,.3); }
+  /* ตัวเลขในเหรียญหินกลม ฝังอยู่บนแผ่น */
+  .disk .num {
+    display: grid; place-items: center; flex: none;
+    width: min(var(--nd, 22px), 70%); height: auto; aspect-ratio: 1;
+    border-radius: 50%;
+    line-height: 1; font-variant-numeric: tabular-nums;
+    background: radial-gradient(circle at 35% 28%, hsl(var(--h) 75% 34%) 0%, hsl(var(--h) 85% 14%) 78%);
+    box-shadow:
+      0 0 0 1.2px hsl(var(--h) 90% 80%),
+      0 0 0 2px hsl(var(--h) 85% 12% / .7),
+      0 1px 3px 1px rgba(0,0,0,.6) inset,
+      0 1px 2px rgba(0,0,0,.45);
+  }
+  .disk.lifted { transform: translateY(-22px); box-shadow: var(--bevel), 0 10px 14px rgba(0,0,0,.35); }
   .disk.drop { animation: drop .28s cubic-bezier(.3, .7, .4, 1); }
   .disk.shake { animation: shake .3s; }
   .disk.cheer { animation: cheer .55s ease-in-out 3; animation-delay: calc(var(--i) * 90ms); }
@@ -368,6 +429,12 @@
   .levels { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .levels .lbl { font-weight: 500; font-size: .95rem; margin-right: 2px; }
   .lv[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 700; }
+  #solve, #showSolve { background: var(--c-solve); color: var(--c-solve-ink); }
+  #again { background: var(--c-again); color: var(--c-again-ink); }
+  .lv[data-lv="veryeasy"][aria-pressed="true"] { background: var(--c-lv1); color: var(--c-lv1-ink); }
+  .lv[data-lv="easy"][aria-pressed="true"] { background: var(--c-lv2); color: var(--c-lv2-ink); }
+  .lv[data-lv="normal"][aria-pressed="true"] { background: var(--c-lv3); color: var(--c-lv3-ink); }
+  .lv[data-lv="advanced"][aria-pressed="true"] { background: var(--c-lv4); color: var(--c-lv4-ink); }
   .limit-note { display: none; }
 
   .timebar { position: relative; margin-top: 30px; height: 6px; border-radius: 999px; background: var(--line); }
@@ -515,7 +582,56 @@
   .snd-btn { width: 36px; min-width: 36px; min-height: 36px; padding: 0; font-size: 1.05rem; line-height: 1; position: relative; }
   .snd-btn[aria-pressed="false"] { opacity: .5; }
   .snd-btn[aria-pressed="false"]::after { content: ''; position: absolute; left: 22%; right: 22%; top: 50%; height: 2px; border-radius: 2px; background: currentColor; transform: rotate(-40deg); }
+
+  /* ---------- หน้าเริ่มเล่น + โหมดเต็มจอ ---------- */
+  .stage-wrap { position: relative; }
+  .start-overlay {
+    position: absolute; inset: 0; z-index: 5;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    border-radius: 18px; padding: 12px; text-align: center;
+    background: color-mix(in srgb, var(--bg) 55%, transparent);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .start-overlay[hidden] { display: none; }
+  .start-btn {
+    font: inherit; font-weight: 700; font-size: clamp(1.5rem, 6vw, 2.1rem); line-height: 1.2;
+    padding: .65em 1.7em; border: 0; border-radius: 999px; cursor: pointer;
+    background: #1E88E5; color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .35), 0 -3px 0 rgba(0, 0, 0, .18) inset;
+    animation: startpulse 1.8s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .start-btn:active { transform: scale(.96); animation: none; }
+  @keyframes startpulse { 50% { transform: scale(1.06); } }
+  .exit-fs { display: none; }
+
+  body.fs { overflow: hidden; }
+  body.fs .app {
+    position: fixed; inset: 0; z-index: 20; max-width: none; margin: 0; overflow: hidden;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    padding: max(8px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
+  }
+  body.fs .side { flex: 0 0 auto; }
+  body.fs .main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; position: static; }
+  body.fs .stage-wrap { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; overflow: hidden; }
+  body.fs .stage { width: 100%; margin-top: 0; }
+  body.fs .help, body.fs .credit { display: none; }
+  body.fs header h1 { display: none; }
+  body.fs .exit-fs { display: inline-flex; align-items: center; justify-content: center; }
+  body.fs .status { min-height: 2.6em; margin-bottom: 0; }
+  /* ผลชนะ/แพ้ ลอยกลางจอ ไม่ดันกระดานให้ขยับ */
+  body.fs .banner:not([hidden]) {
+    position: fixed; inset: 0; margin: auto; z-index: 30;
+    width: min(92vw, 420px); height: fit-content; max-height: 86vh; overflow: auto;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5), 0 12px 40px rgba(0, 0, 0, .45);
+  }
+  @media (orientation: landscape) and (max-height: 540px) {
+    body.fs .app { display: grid; grid-template-columns: minmax(290px, 40%) 1fr; gap: 14px; align-items: stretch; padding-top: max(6px, env(safe-area-inset-top, 0px)); padding-bottom: max(6px, env(safe-area-inset-bottom, 0px)); }
+    body.fs .side { overflow: auto; }
+  }
   @media (prefers-reduced-motion: reduce) {
+    .start-btn { animation: none !important; }
     .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
     #timeFill, .time-animal { transition: none !important; animation: none !important; }
     .time-animal span { animation: none !important; }
@@ -526,9 +642,10 @@
 <div class="app">
   <div class="side">
   <header>
+    <button class="btn snd-btn exit-fs" id="exitFs" aria-label="ออกจากโหมดเต็มจอ" title="ออกจากโหมดเต็มจอ (Esc)">✕</button>
     <h1>Tower of Hanoi</h1>
     <div class="audio" role="group" aria-label="เสียง">
-      <button class="btn snd-btn" id="musicBtn" aria-pressed="true" aria-label="เพลงพื้นหลัง" title="เพลงพื้นหลัง (กด M)">🎧</button>
+      <button class="btn snd-btn" id="musicBtn" aria-pressed="true" aria-label="ดนตรีผ่อนคลาย" title="ดนตรีผ่อนคลาย (กด M)">🎵</button>
       <button class="btn snd-btn" id="sfxBtn" aria-pressed="true" aria-label="เสียงเอฟเฟกต์" title="เสียงเอฟเฟกต์">🔊</button>
     </div>
     <button class="btn star-total" id="starTotal" aria-haspopup="dialog" title="ยศและสรุปดาวสะสม"><span class="rk" id="rankName"></span><span class="st">★</span> <span id="starTotalN">0</span></button>
@@ -594,12 +711,17 @@
 
   </div>
   <div class="main">
-  <div class="stage" id="stage"></div>
+  <div class="stage-wrap" id="stageWrap">
+    <div class="stage" id="stage"></div>
+    <div class="start-overlay" id="startOverlay">
+      <button class="start-btn" id="startBtn" type="button"><span class="sb-i" aria-hidden="true">▶</span> <span id="startLbl">เริ่มเล่น</span></button>
+    </div>
+  </div>
 
   <p class="help">
     ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (นับแยกตามโหมดความเร็วและจำนวนแผ่น และปลดแล้วปลดถาวร)
     · ใบ้ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่แต่ถูกหักแต้มใบ้สะสม 3 แต้ม
-    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่, <kbd>M</kbd> เปิด/ปิดเพลง</span>
+    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่, <kbd>M</kbd> เปิด/ปิดดนตรี</span>
   </p>
   <footer class="credit">Developed by 9Bau · 2026</footer>
   </div>
@@ -647,6 +769,9 @@
   var START_N = 2;      // ด่านแรกสำหรับผู้เล่นใหม่ / หลังรีเซ็ตสถิติ
   var n = START_N;
   var lastDh = 0;
+  var FS_CHROME = 130;
+  var paused = false, pausedAt = 0;                  // หยุดนับเวลาเมื่อออกจากโหมดเต็มจอกลางรอบ
+  function nowMs() { return paused ? pausedAt : Date.now(); }
   var pendingFlight = null;
   var winPending = false, winInfo = null, winToken = 0, confetti = null;
   var pegs, moves, history, started, startTime, elapsed, won, selected, solving, solveTimer, solveList, solveIdx, lastDrop, shakePeg;
@@ -759,6 +884,7 @@
     return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
   function diskHeight() {
+    if (document.body.classList.contains('fs')) return fsFitDh();   // โหมดเต็มจอ: ขยายแผ่นให้พอดีพื้นที่ที่เหลือ
     var base = n <= 5 ? 30 : n <= 7 ? 26 : n <= 9 ? 22 : 20;
     var w = window.innerWidth, h = window.innerHeight;
     if (w >= 700 && h >= 640) {                        // แท็บเล็ต/จอใหญ่: ขยายกระดานให้เต็มความสูงที่เหลือ
@@ -772,6 +898,18 @@
     return base;
   }
   var lastTickSec = -1;
+  var fsKey = '', fsVal = 30;
+  function fsFitDh() {
+    var k = n + '|' + window.innerWidth + 'x' + window.innerHeight;
+    if (fsKey === k) return fsVal;                     // คำนวณใหม่เมื่อขนาดจอ/จำนวนแผ่นเปลี่ยน (กันกระดานขยับระหว่างเล่น)
+    var H = $('#stageWrap').clientHeight;
+    if (!H) return fsVal;                              // เลย์เอาต์ยังไม่พร้อม
+    // พื้นที่ว่าง − ส่วนประกอบที่ไม่ใช่แผ่น(ป้ายเสา/ฐาน/ขอบ ~FS_CHROME) − เผื่อข้อความสถานะขึ้นบรรทัดใหม่
+    var v = Math.floor((H - FS_CHROME - 24) / (n + 1));
+    v = Math.max(20, Math.min(64, v));
+    fsKey = k; fsVal = v;
+    return v;
+  }
   var fitCache = { k: '', v: 30 };
   function phoneFitDh() {
     var k = n + '|' + window.innerWidth + 'x' + window.innerHeight;
@@ -856,7 +994,7 @@
     try { localStorage.setItem('hanoi-n', String(n)); } catch (e) {}
     pegs = [[], [], []];
     for (var i = n; i >= 1; i--) pegs[0].push(i);
-    moves = 0; history = []; started = false; startTime = 0; elapsed = 0;
+    moves = 0; history = []; started = false; startTime = 0; elapsed = 0; paused = false;
     won = false; over = false; selected = null; lastDrop = null; shakePeg = null;
     resetCelebration();
     setStatus(charged > 0
@@ -876,7 +1014,7 @@
 
   /* ---------- sound (สังเคราะห์ด้วย Web Audio ไม่ต้องมีไฟล์เสียง) ---------- */
   var Snd = (function () {
-    var ctx = null, sfxBus, musicBus, timer = null, nextT = 0, step = 0, last = {};
+    var ctx = null, sfxBus, musicBus, musicLp, musicWet, stream = null, timer = null, nextT = 0, step = 0, last = {};
     var MV = 0.45;                                     // ระดับเสียงเพลง (เบากว่าเอฟเฟกต์)
     var musicOn = true, sfxOn = true, sess = null;
     try {
@@ -897,10 +1035,10 @@
         var slp = ctx.createBiquadFilter(); slp.type = 'lowpass'; slp.frequency.value = 3000; slp.Q.value = 0.5;   // ตัดเสียงสูงแหลมทิ้ง
         sfxBus.connect(slp); slp.connect(master);
         musicBus = ctx.createGain(); musicBus.gain.value = musicOn ? MV : 0;
-        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; lp.connect(master);
+        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4500; lp.connect(master); musicLp = lp;   // ตัดย่านสูงให้เสียงนุ่ม อบอุ่น ฟังนานไม่เมื่อยหู
         musicBus.connect(lp);
         var dl = ctx.createDelay(1), fb = ctx.createGain(), wet = ctx.createGain();
-        dl.delayTime.value = 0.34; fb.gain.value = 0.3; wet.gain.value = 0.35;
+        dl.delayTime.value = 0.34; fb.gain.value = 0.3; wet.gain.value = 0.04; musicWet = wet;   // เอคโค่นุ่มๆ เอคโค่บางมาก ไม่ให้เสียงก้อง
         musicBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(lp);
       }
       if (ctx.state !== 'running') { try { ctx.resume(); } catch (e) {} }
@@ -970,43 +1108,112 @@
 
     function newSess() { sess = ctx.createGain(); sess.gain.value = 1; sess.connect(musicBus); }
     function bus() { if (!sess) newSess(); return sess; }
-    function mt(f, t, dur, vol, att) { tone(bus(), 'sine', f, 0, t, dur, vol, att); }   // โน้ตเพลงเป็นคลื่นไซน์นุ่มๆ
-    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
-    // เพลง "โฟกัส": ช้า สม่ำเสมอ ทำนองน้อย ไม่มีกลอง ไม่มีจังหวะกระชาก เพื่อให้คิดวางแผนย้ายแผ่นได้ต่อเนื่อง
-    // คอร์ด D เมเจอร์โทนสว่างสงบ: Dmaj9 → Bm7 → Gmaj7 → A6sus
-    var FOCUS = [
-      { b: 73.42, n: [220.00, 293.66, 369.99, 554.37] },
-      { b: 61.74, n: [246.94, 293.66, 369.99, 440.00] },
-      { b: 98.00, n: [246.94, 293.66, 369.99, 392.00] },
-      { b: 55.00, n: [220.00, 293.66, 329.63, 369.99] }
-    ], FARP = [0, 1, 2, 3, 2, 1, 2, 1], FMEL = [440.00, 493.88, 554.37, 587.33, 659.25, 739.99];
-    var BPM = { veryeasy: 52, easy: 56, normal: 60, advanced: 64 };   // เปลี่ยนตามโหมดเพียงเล็กน้อย ไม่เร่งให้รู้สึกกดดัน
-    function stepAt(t, st, sd) {
-      var ch = FOCUS[Math.floor(st / 8) % 4], k = st % 8;
-      if (k === 0) {
-        ch.n.forEach(function (f) { mt(f, t, sd * 8.5, 0.028, 0.9); });      // คอร์ดพาดยาว ค่อยๆ ผสานเข้ามา
-        mt(ch.b, t, sd * 7.5, 0.13, 0.2);                                   // เบสต่ำนุ่มๆ
+    // ดนตรี Lo-fi Chill สำหรับใช้สมาธิคิด: เปียโนไฟฟ้า (Rhodes) นุ่มๆ + เบสเบาๆ + กลองเบามากๆ จังหวะสม่ำเสมอ
+    //  - ไม่มีทำนองเด่นที่แย่งความสนใจ เล่นวนคอร์ดเดิมซ้ำๆ (Cmaj9 → Am9 → Dm9 → G13) จึงฟังเป็นพื้นหลังได้นาน
+    //  - จังหวะช้าๆ แบบสวิงนิดๆ ราว 75 BPM ความดังคงที่ ไม่มีเสียงดังกะทันหัน
+    //  - ถ้าไม่ต้องการเสียงกลอง ตั้ง DRUMS = false
+    function createMusic(ctx, out) {
+      var DRUMS = true;
+      var CH = [
+        { bass: 130.81, n: [164.81, 196.00, 246.94, 293.66] },   // Cmaj9
+        { bass: 110.00, n: [196.00, 246.94, 261.63, 329.63] },   // Am9
+        { bass: 146.83, n: [174.61, 220.00, 261.63, 329.63] },   // Dm9
+        { bass:  98.00, n: [174.61, 246.94, 293.66, 329.63] }    // G13
+      ];
+      var stepN = 0, nextT = 0, started = false, stopped = false;
+      var nb = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate), nd = nb.getChannelData(0);
+      for (var i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+      function rnd(a, b) { return a + Math.random() * (b - a); }
+      function gain(v) { var g = ctx.createGain(); g.gain.value = v; return g; }
+      function toOut(node, p) {
+        if (ctx.createStereoPanner) { var pn = ctx.createStereoPanner(); pn.pan.value = p; node.connect(pn); pn.connect(out); }
+        else node.connect(out);
       }
-      if (k % 2 === 0) mt(ch.n[FARP[k]] * 2, t, sd * 3, 0.045, 0.012);       // อาร์เปจโจช้าๆ สม่ำเสมอเหมือนนาฬิกาเบาๆ
-      if ((k === 1 || k === 5) && Math.random() < 0.22) mt(pick(FMEL), t, sd * 4, 0.04, 0.02);   // ทำนองสั้นๆ นานๆ ที
+      function env(g, t, peak, att, dur) {
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(peak, t + att);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      }
+      function osc(f, t, dur, dest) {
+        var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+        o.connect(dest); o.start(t); o.stop(t + dur + 0.05);
+      }
+      function ep(f, t, vol, dur, p) {                        // เปียโนไฟฟ้านุ่มๆ: ไซน์ + ฮาร์โมนิกสั้นๆ ให้ได้โทนอุ่น
+        var g = gain(0.0001), g2 = gain(0.0001), g3 = gain(0.0001);
+        env(g, t, vol, 0.01, dur); env(g2, t, 0.28, 0.01, dur * 0.4); env(g3, t, 0.08, 0.005, 0.12);
+        osc(f, t, dur, g); osc(f * 2, t, dur * 0.4, g2); osc(f * 4, t, 0.12, g3);
+        g2.connect(g); g3.connect(g);
+        toOut(g, p);
+      }
+      function bassNote(f, t, vol, dur) {
+        var g = gain(0.0001), g2 = gain(0.0001);
+        env(g, t, vol, 0.012, dur); env(g2, t, 0.18, 0.012, dur * 0.5);
+        osc(f, t, dur, g); osc(f * 2, t, dur * 0.5, g2); g2.connect(g);
+        g.connect(out);
+      }
+      function kick(t) {
+        var o = ctx.createOscillator(), g = gain(0.0001);
+        o.type = 'sine'; o.frequency.setValueAtTime(115, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.12);
+        env(g, t, 0.2, 0.004, 0.28);
+        o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.3);
+      }
+      function noise(t, type, freq, q, vol, dur) {            // กลองสแนร์/ไฮแฮตเบามาก ทำจากนอยส์สั้นๆ
+        var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = gain(0.0001);
+        s.buffer = nb; s.loop = true; f.type = type; f.frequency.value = freq; f.Q.value = q;
+        env(g, t, vol, 0.003, dur);
+        s.connect(f); f.connect(g); toOut(g, rnd(-0.15, 0.15));
+        s.start(t, rnd(0, 0.8)); s.stop(t + dur + 0.05);
+      }
+      function step(n, t, len) {
+        var bar = Math.floor(n / 8) % 4, st = n % 8, c = CH[bar];
+        var tt = t + (st % 2 ? len * 0.14 : 0) + rnd(0, 0.008);   // สวิงนิดๆ + คลาดจังหวะเล็กน้อยให้เป็นธรรมชาติ
+        if (st === 0) {                                          // ตีคอร์ดต้นห้อง (ไล่เสียงบางๆ)
+          c.n.forEach(function (f, i) { ep(f, tt + i * 0.014, 0.042, len * 6, (i - 1.5) * 0.18); });
+          bassNote(c.bass, tt, 0.15, len * 3.2);
+        } else if (st === 3 && Math.random() < 0.75) {           // ตีซ้ำเบาๆ จังหวะเว้น
+          c.n.forEach(function (f, i) { ep(f, tt + i * 0.012, 0.026, len * 3, (i - 1.5) * 0.18); });
+        } else if ((st === 1 || st === 5 || st === 7) && Math.random() < 0.22) {   // โน้ตเดี่ยวเบามาก เติมความนุ่ม
+          ep(c.n[(Math.random() * c.n.length) | 0] * 2, tt, 0.02, len * 2.4, rnd(-0.3, 0.3));
+        }
+        if (st === 5 && Math.random() < 0.6) bassNote(c.bass, tt, 0.1, len * 1.6);
+        if (DRUMS) {
+          if (st === 0 || (st === 5 && Math.random() < 0.7)) kick(tt);
+          if (st === 2 || st === 6) noise(tt, 'bandpass', 1900, 0.9, 0.05, 0.11);
+          noise(tt, 'bandpass', 5200, 0.8, st % 2 ? 0.009 : 0.014, 0.04);
+        }
+      }
+      return {
+        update: function (t, k) {                            // เรียกทุก ~120ms: จองโน้ตล่วงหน้า
+          var len = 60 / (75 * k) / 2;                       // ความยาว 1 จังหวะย่อย (เอ็บท์)
+          if (!started) { started = true; nextT = t + 0.2; }
+          while (!stopped && nextT < t + 0.5) { step(stepN, nextT, len); stepN++; nextT += len; }
+        },
+        stop: function () { stopped = true; }
+      };
     }
-    function bpm() { return BPM[level] || 72; }
+
+    // เสียงพื้นหลัง = ดนตรีผ่อนคลายช้าๆ ใสๆ ไม่มีจังหวะ จึงไม่รบกวนสมาธิตอนวางแผนย้ายแผ่น
+    var BPM = { veryeasy: 52, easy: 56, normal: 60, advanced: 64 };   // ระดับความเร็วเดิม ใช้ปรับความพลิ้วของน้ำเล็กน้อย
+    function bpm() { return BPM[level] || 56; }
     function sched() {
-      if (!ctx || ctx.state !== 'running') return;
-      var sd = 60 / bpm() / 2;
-      if (nextT < ctx.currentTime) nextT = ctx.currentTime + 0.05;
-      while (nextT < ctx.currentTime + 0.4) { stepAt(nextT, step, sd); step = (step + 1) % 32; nextT += sd; }
+      if (!ctx || ctx.state !== 'running' || !stream) return;
+      stream.update(ctx.currentTime + 0.05, bpm() / 56);
     }
-    function startMusic() { if (timer || !ctx) return; newSess(); step = 0; nextT = ctx.currentTime + 0.1; timer = setInterval(sched, 120); }
-    function stopMusic() {                                // ค่อยๆ จางเสียงเพลงที่ค้างอยู่
+    function startMusic() {
+      if (timer || !ctx) return;
+      newSess();
+      stream = createMusic(ctx, bus());
+      timer = setInterval(sched, 120);
+    }
+    function stopMusic() {                                // ค่อยๆ จางเสียงน้ำแล้วหยุดแหล่งเสียงทั้งหมด
       if (timer) { clearInterval(timer); timer = null; }
       if (sess && ctx) {
-        var o = sess, now = ctx.currentTime;
-        o.gain.cancelScheduledValues(now); o.gain.setTargetAtTime(0, now, 0.06);
-        setTimeout(function () { try { o.disconnect(); } catch (e) {} }, 800);
+        var o = sess, st = stream, now = ctx.currentTime;
+        o.gain.cancelScheduledValues(now); o.gain.setTargetAtTime(0, now, 0.12);
+        setTimeout(function () { try { if (st) st.stop(); o.disconnect(); } catch (e) {} }, 1200);
       }
-      sess = null;
+      stream = null; sess = null;
     }
     function applyMusic() {
       if (!ctx) return;
@@ -1047,13 +1254,13 @@
   function syncAudioUI() {
     var on = Snd.music(), mb = $('#musicBtn');
     mb.setAttribute('aria-pressed', String(on));
-    var lbl = on ? 'เพลงพื้นหลัง: เปิดอยู่ (กดเพื่อปิด)' : 'เพลงพื้นหลัง: ปิดอยู่ (กดเพื่อเปิด)';
+    var lbl = on ? 'ดนตรีผ่อนคลาย: เปิดอยู่ (กดเพื่อปิด)' : 'ดนตรีผ่อนคลาย: ปิดอยู่ (กดเพื่อเปิด)';
     mb.setAttribute('aria-label', lbl); mb.title = lbl + ' · กด M';
     $('#sfxBtn').setAttribute('aria-pressed', String(Snd.sfx()));
   }
   function changeMusic() {
     Snd.toggleMusic(); syncAudioUI();
-    setStatus(Snd.music() ? '🎧 เปิดเพลงพื้นหลังแล้ว' : '🔇 ปิดเพลงพื้นหลังแล้ว');
+    setStatus(Snd.music() ? '🎵 เปิดดนตรีผ่อนคลายแล้ว' : '🔇 ปิดดนตรีผ่อนคลายแล้ว');
   }
 
   function doMove(from, to, auto) {
@@ -1072,7 +1279,7 @@
 
   function finish(auto) {
     won = true;
-    if (started) elapsed = Date.now() - startTime;
+    if (started) elapsed = nowMs() - startTime;
     var min = minMoves(), title, detail, perfect = false, starInfo = null;
     if (auto) {
       title = 'เฉลยเสร็จแล้ว';
@@ -1406,8 +1613,12 @@
         var t = n === 1 ? 0.5 : (size - 1) / (n - 1);
         d.style.setProperty('--w', n === 1 ? 60 : (26 + t * 68).toFixed(1));
         d.style.setProperty('--h', Math.round(8 + t * 242));
-        d.textContent = size;
-        if (dh >= 38) d.style.fontSize = '1rem';
+        var nm = document.createElement('span');
+        nm.className = 'num';
+        nm.textContent = size;
+        d.appendChild(nm);
+        d.style.fontSize = Math.max(8, Math.min(21, Math.round((dh - 3) * 0.46))) + 'px';
+        d.style.setProperty('--nd', Math.max(11, Math.min(27, Math.round((dh - 3) * 0.56))) + 'px');   // วงกลมเล็กลง ใหญ่กว่าตัวเลขแค่นิดเดียว
         if (isTop && selected === i) d.classList.add('lifted');
         if (isTop && shakePeg === i) d.classList.add('shake');
         if (isTop && hintMove && hintMove[0] === i) d.classList.add('hinted');
@@ -1499,7 +1710,7 @@
     }
     if (over) rem = 0;
     else if (won) rem = Math.max(0, lim - elapsed);
-    else if (started) rem = Math.max(0, lim - (Date.now() - startTime));
+    else if (started) rem = Math.max(0, lim - (nowMs() - startTime));
     else rem = lim;
     pct = rem / lim * 100;
     $('#time').textContent = fmtTime(Math.ceil(rem / 1000) * 1000);
@@ -1517,12 +1728,49 @@
   function tick() {
     if (solving) return;
     updateTime();
-    if (started && !won && !over) {
+    if (started && !won && !over && !paused) {
       var remain = limitMs() - (Date.now() - startTime), sec = Math.ceil(remain / 1000);
       if (remain <= 0) timeUp();
       else if (sec <= 5 && limitMs() > 8000 && sec !== lastTickSec) { lastTickSec = sec; Snd.play('tick'); }   // นับถอยหลัง 5 วินาทีสุดท้าย
     }
   }
+
+
+  /* ---------- เริ่มเล่น / เต็มจอ ---------- */
+  var overlay = $('#startOverlay');
+  function fsActive() { return document.body.classList.contains('fs'); }
+  function relayout() {
+    fsKey = '';
+    requestAnimationFrame(function () { requestAnimationFrame(function () { render(); }); });
+  }
+  function enterFs() {
+    if (fsActive()) return;
+    overlay.hidden = true;
+    document.body.classList.add('fs');
+    if (paused) { startTime += Date.now() - pausedAt; paused = false; }   // เล่นต่อ: เวลาที่หยุดไว้ไม่ถูกนับ
+    var el = document.documentElement, rq = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (rq) {                                          // เดสก์ท็อป/Android/iPad ใช้เต็มจอจริง; iPhone ใช้โหมดเต็มหน้าจอแทน
+      try { var r = rq.call(el, { navigationUI: 'hide' }); if (r && r.catch) r.catch(function () {}); } catch (e) {}
+    }
+    relayout();
+  }
+  function exitFs() {
+    if (!fsActive()) return;
+    var fe = document.fullscreenElement || document.webkitFullscreenElement;
+    document.body.classList.remove('fs');
+    if (fe) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
+    if (started && !won && !over && !solving && !paused) { paused = true; pausedAt = Date.now(); }   // หยุดเวลาไว้ระหว่างออก
+    $('#startLbl').textContent = (started && !won && !over) ? 'เล่นต่อ' : 'เริ่มเล่น';
+    overlay.hidden = false;
+    relayout();
+  }
+  function onFsChange() {                              // ผู้เล่นกด Esc/ปัดออกจากเต็มจอจริง
+    if (!(document.fullscreenElement || document.webkitFullscreenElement) && fsActive()) exitFs();
+  }
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  $('#startBtn').addEventListener('click', enterFs);
+  $('#exitFs').addEventListener('click', exitFs);
 
   /* ---------- events ---------- */
   stage.addEventListener('click', function (e) {
@@ -1539,6 +1787,13 @@
   document.addEventListener('keydown', function (e) {
     if (!modal.hidden) { if (e.key === 'Escape') closeStars(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!overlay.hidden) {                             // ยังไม่ได้เริ่มเล่น: Enter/Space = เริ่ม, M = ดนตรี, อย่างอื่นไม่ทำงาน
+      var kk = e.key.toLowerCase();
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterFs(); }
+      else if (kk === 'm') changeMusic();
+      return;
+    }
+    if (e.key === 'Escape' && fsActive()) { exitFs(); return; }
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'select' || tag === 'input') return;
     var k = e.key.toLowerCase();
