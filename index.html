@@ -788,7 +788,9 @@
   /* ---------- flight animation ---------- */
   function topDiskEl(i) {
     var peg = stage.children[i] && stage.children[i].querySelector('.peg');
-    return peg ? peg.lastElementChild : null;
+    if (!peg) return null;
+    var ds = peg.querySelectorAll('.disk');          // เลือกเฉพาะแผ่นจริง (บนเสามีธง/ลูกศรใบ้ปนอยู่ด้วย)
+    return ds.length ? ds[ds.length - 1] : null;
   }
   function captureFlight(from, to) {
     var el = topDiskEl(from);
