@@ -485,7 +485,8 @@
   /* ---------- iPhone แนวตั้ง: ย่อเมนู เพิ่มพื้นที่กระดานเกม ---------- */
   @media (max-width: 560px) and (orientation: portrait) {
     .app { padding-top: 6px; padding-bottom: 14px; }
-    header h1 { font-size: 1.3rem; }
+    header h1 { font-size: 1.25rem; white-space: nowrap; }
+    header .rk-n { display: none; }   /* หัวเกมแคบ: โชว์เฉพาะไอคอนยศ ชื่อยศดูได้ในหน้าสรุปดาว */
     header .star-total { min-height: 34px; padding: 2px 9px; font-size: .9rem; }
     .controls { margin-top: 6px; padding: 8px; gap: 6px 8px; border-radius: 12px; }
     .settings { flex-wrap: nowrap; gap: 6px; }
@@ -508,6 +509,12 @@
     .stage { margin-top: 6px; border-radius: 16px; }
     .help { font-size: .78rem; margin-top: 10px; }
   }
+
+  /* ---------- ปุ่มเสียง ---------- */
+  .audio { display: flex; gap: 4px; margin-left: auto; }
+  .snd-btn { width: 36px; min-width: 36px; min-height: 36px; padding: 0; font-size: 1.05rem; line-height: 1; position: relative; }
+  .snd-btn[aria-pressed="false"] { opacity: .5; }
+  .snd-btn[aria-pressed="false"]::after { content: ''; position: absolute; left: 22%; right: 22%; top: 50%; height: 2px; border-radius: 2px; background: currentColor; transform: rotate(-40deg); }
   @media (prefers-reduced-motion: reduce) {
     .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
     #timeFill, .time-animal { transition: none !important; animation: none !important; }
@@ -520,6 +527,10 @@
   <div class="side">
   <header>
     <h1>Tower of Hanoi</h1>
+    <div class="audio" role="group" aria-label="เสียง">
+      <button class="btn snd-btn" id="musicBtn" aria-pressed="true" aria-label="เพลงพื้นหลัง" title="เพลงพื้นหลัง (กด M)">🎧</button>
+      <button class="btn snd-btn" id="sfxBtn" aria-pressed="true" aria-label="เสียงเอฟเฟกต์" title="เสียงเอฟเฟกต์">🔊</button>
+    </div>
     <button class="btn star-total" id="starTotal" aria-haspopup="dialog" title="ยศและสรุปดาวสะสม"><span class="rk" id="rankName"></span><span class="st">★</span> <span id="starTotalN">0</span></button>
     <p>ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C โดยย้ายได้ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก</p>
   </header>
@@ -588,7 +599,7 @@
   <p class="help">
     ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก · แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง · นับถอยหลังเริ่มเมื่อหยิบแผ่นแรก · ปุ่มเฉลยจะปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (นับแยกตามโหมดความเร็วและจำนวนแผ่น และปลดแล้วปลดถาวร)
     · ใบ้ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่แต่ถูกหักแต้มใบ้สะสม 3 แต้ม
-    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่</span>
+    <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่, <kbd>M</kbd> เปิด/ปิดเพลง</span>
   </p>
   <footer class="credit">Developed by 9Bau · 2026</footer>
   </div>
@@ -760,6 +771,7 @@
     if (w <= 560 && h > w) base = phoneFitDh();        // มือถือแนวตั้ง: ขยายกระดานให้เต็มพื้นที่ที่เหลือ
     return base;
   }
+  var lastTickSec = -1;
   var fitCache = { k: '', v: 30 };
   function phoneFitDh() {
     var k = n + '|' + window.innerWidth + 'x' + window.innerHeight;
@@ -836,7 +848,8 @@
       charged = Math.min(HINT_PER_ROUND, hintBalance());
       hintsSpent += charged; savePrefs();
     }
-    curStage = key; roundTouched = false;
+    curStage = key; roundTouched = false; lastTickSec = -1;
+    Snd.play('reset');
     hintsLeft = Math.min(HINT_PER_ROUND, hintBalance());
     hintMove = null; hintsUsed = 0;
     if (typeof newN === 'number') n = newN;
@@ -860,6 +873,189 @@
     return src[src.length - 1] < dst[dst.length - 1];
   }
 
+
+  /* ---------- sound (สังเคราะห์ด้วย Web Audio ไม่ต้องมีไฟล์เสียง) ---------- */
+  var Snd = (function () {
+    var ctx = null, sfxBus, musicBus, timer = null, nextT = 0, step = 0, last = {};
+    var MV = 0.45;                                     // ระดับเสียงเพลง (เบากว่าเอฟเฟกต์)
+    var musicOn = true, sfxOn = true, sess = null;
+    try {
+      musicOn = localStorage.getItem('hanoi-music') !== 'off';     // ค่าเก่า (ชื่อแบบเพลงต่างๆ) = เปิด
+      sfxOn = localStorage.getItem('hanoi-sfx') !== 'off';
+    } catch (e) {}
+
+    function ensure() {
+      if (!ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return false;
+        try { ctx = new AC(); } catch (e) { ctx = null; return false; }
+        var master = ctx.createGain(); master.gain.value = 0.9;
+        var lim = ctx.createDynamicsCompressor();              // กันเสียงแตกเมื่อหลายเสียงซ้อนกัน
+        lim.threshold.value = -10; lim.knee.value = 8; lim.ratio.value = 10; lim.attack.value = 0.003; lim.release.value = 0.2;
+        master.connect(lim); lim.connect(ctx.destination);
+        sfxBus = ctx.createGain(); sfxBus.gain.value = sfxOn ? 1 : 0;
+        var slp = ctx.createBiquadFilter(); slp.type = 'lowpass'; slp.frequency.value = 3000; slp.Q.value = 0.5;   // ตัดเสียงสูงแหลมทิ้ง
+        sfxBus.connect(slp); slp.connect(master);
+        musicBus = ctx.createGain(); musicBus.gain.value = musicOn ? MV : 0;
+        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; lp.connect(master);
+        musicBus.connect(lp);
+        var dl = ctx.createDelay(1), fb = ctx.createGain(), wet = ctx.createGain();
+        dl.delayTime.value = 0.34; fb.gain.value = 0.3; wet.gain.value = 0.35;
+        musicBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(lp);
+      }
+      if (ctx.state !== 'running') { try { ctx.resume(); } catch (e) {} }
+      return true;
+    }
+    function tone(bus, type, f0, f1, t, dur, vol, attack) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), a = attack || 0.005;
+      o.type = type; o.frequency.setValueAtTime(f0, t);
+      if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(bus);
+      o.start(t); o.stop(t + dur + 0.05);
+    }
+    // เสียงทั้งหมดใช้คลื่นไซน์นุ่มๆ ช่วงเสียงกลาง ไม่ใช้นอยส์/คลื่นฟันเลื่อย/เสียงสูงแหลม และผ่านโลว์พาสอีกชั้น
+    function chime(t, f, dur, vol) {                      // เสียงระฆัง/มาริมบานุ่มๆ
+      tone(sfxBus, 'sine', f, 0, t, dur, vol, 0.005);
+      if (f * 2 <= 1500) tone(sfxBus, 'sine', f * 2, 0, t, dur * 0.5, vol * 0.18, 0.005);
+    }
+    function pad(freqs, t, dur, vol) {                    // คอร์ดอุ่นๆ ค่อยๆ ผสานเสียง
+      freqs.forEach(function (f) {
+        tone(sfxBus, 'sine', f, 0, t, dur, vol, 0.04);
+        tone(sfxBus, 'sine', f * 2, 0, t, dur * 0.8, vol * 0.22, 0.04);
+      });
+    }
+    function celebrate(t, big) {
+      var run = big ? [392.00, 523.25, 659.25, 783.99, 1046.5, 1318.5] : [523.25, 659.25, 783.99, 1046.5];
+      run.forEach(function (f, k) { chime(t + k * 0.09, f, 0.5, 0.18); });                     // ไล่เสียงขึ้นอย่างสดใส
+      var h = t + run.length * 0.09 + 0.06;
+      if (big) {                                                                               // ชนะสมบูรณ์แบบ: คอร์ด F → G → C
+        pad([174.61, 220.00, 261.63, 349.23], h, 0.55, 0.1);
+        pad([196.00, 246.94, 293.66, 392.00], h + 0.4, 0.55, 0.1);
+        h += 0.8;
+      }
+      pad([261.63, 329.63, 392.00, 523.25], h, big ? 1.8 : 1.4, 0.12);                         // คอร์ดจบ C เมเจอร์
+      tone(sfxBus, 'sine', 65.41, 0, h, big ? 1.5 : 1.2, 0.34, 0.01);                          // เบสอุ่นๆ
+      tone(sfxBus, 'sine', 98.00, 55.0, h, 0.35, 0.3, 0.005);                                  // ตุ้บทุ้มๆ ตอนลงจังหวะ
+      chime(h + 0.02, 783.99, 1.1, 0.16);
+      chime(h + 0.16, 1046.5, 1.2, 0.14);
+    }
+    function seq(freqs, t, gap, type, dur, vol) {
+      freqs.forEach(function (f, i) { tone(sfxBus, type, f, 0, t + i * gap, dur, vol, 0.008); });
+    }
+    var T = {
+      pick:   function (t) { tone(sfxBus, 'sine', 392, 0, t, 0.09, 0.2, 0.005); },
+      cancel: function (t) { tone(sfxBus, 'sine', 330, 0, t, 0.09, 0.14, 0.005); },
+      move:   function (t) { tone(sfxBus, 'sine', 230, 120, t, 0.18, 0.5, 0.005); },
+      bad:    function (t) { tone(sfxBus, 'sine', 200, 150, t, 0.16, 0.34, 0.005); },
+      hint:   function (t) { seq([523.25, 659.25, 783.99], t, 0.09, 'sine', 0.25, 0.16); },
+      undo:   function (t) { tone(sfxBus, 'sine', 392, 0, t, 0.09, 0.15, 0.005); tone(sfxBus, 'sine', 294, 0, t + 0.08, 0.12, 0.15, 0.005); },
+      reset:  function (t) { tone(sfxBus, 'sine', 262, 0, t, 0.1, 0.14, 0.005); tone(sfxBus, 'sine', 330, 0, t + 0.07, 0.14, 0.14, 0.005); },
+      tick:   function (t) { tone(sfxBus, 'sine', 520, 0, t, 0.06, 0.1, 0.004); },
+      solved: function (t) { seq([392.00, 523.25, 659.25, 783.99], t, 0.1, 'sine', 0.4, 0.18); },   // ดูเฉลยจบ: ยินดีเบาๆ
+      win:    function (t) { celebrate(t, false); },
+      perfect:function (t) { celebrate(t, true); },
+      rank:   function (t) { seq([392.00, 523.25, 659.25, 783.99], t, 0.1, 'sine', 0.5, 0.18); },
+      lose:   function (t) { seq([392, 330, 262, 196], t, 0.2, 'sine', 0.4, 0.24); }
+    };
+    function play(name, delay) {
+      if (!sfxOn || !ctx || ctx.state !== 'running' || !T[name]) return;
+      var now = ctx.currentTime;
+      if (last[name] && now - last[name] < 0.05) return;     // กันเสียงรัวซ้ำเมื่อเฉลยเร็วๆ
+      last[name] = now;
+      try { T[name](now + (delay || 0) + 0.005); } catch (e) {}
+    }
+
+    function newSess() { sess = ctx.createGain(); sess.gain.value = 1; sess.connect(musicBus); }
+    function bus() { if (!sess) newSess(); return sess; }
+    function mt(f, t, dur, vol, att) { tone(bus(), 'sine', f, 0, t, dur, vol, att); }   // โน้ตเพลงเป็นคลื่นไซน์นุ่มๆ
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+    // เพลง "โฟกัส": ช้า สม่ำเสมอ ทำนองน้อย ไม่มีกลอง ไม่มีจังหวะกระชาก เพื่อให้คิดวางแผนย้ายแผ่นได้ต่อเนื่อง
+    // คอร์ด D เมเจอร์โทนสว่างสงบ: Dmaj9 → Bm7 → Gmaj7 → A6sus
+    var FOCUS = [
+      { b: 73.42, n: [220.00, 293.66, 369.99, 554.37] },
+      { b: 61.74, n: [246.94, 293.66, 369.99, 440.00] },
+      { b: 98.00, n: [246.94, 293.66, 369.99, 392.00] },
+      { b: 55.00, n: [220.00, 293.66, 329.63, 369.99] }
+    ], FARP = [0, 1, 2, 3, 2, 1, 2, 1], FMEL = [440.00, 493.88, 554.37, 587.33, 659.25, 739.99];
+    var BPM = { veryeasy: 52, easy: 56, normal: 60, advanced: 64 };   // เปลี่ยนตามโหมดเพียงเล็กน้อย ไม่เร่งให้รู้สึกกดดัน
+    function stepAt(t, st, sd) {
+      var ch = FOCUS[Math.floor(st / 8) % 4], k = st % 8;
+      if (k === 0) {
+        ch.n.forEach(function (f) { mt(f, t, sd * 8.5, 0.028, 0.9); });      // คอร์ดพาดยาว ค่อยๆ ผสานเข้ามา
+        mt(ch.b, t, sd * 7.5, 0.13, 0.2);                                   // เบสต่ำนุ่มๆ
+      }
+      if (k % 2 === 0) mt(ch.n[FARP[k]] * 2, t, sd * 3, 0.045, 0.012);       // อาร์เปจโจช้าๆ สม่ำเสมอเหมือนนาฬิกาเบาๆ
+      if ((k === 1 || k === 5) && Math.random() < 0.22) mt(pick(FMEL), t, sd * 4, 0.04, 0.02);   // ทำนองสั้นๆ นานๆ ที
+    }
+    function bpm() { return BPM[level] || 72; }
+    function sched() {
+      if (!ctx || ctx.state !== 'running') return;
+      var sd = 60 / bpm() / 2;
+      if (nextT < ctx.currentTime) nextT = ctx.currentTime + 0.05;
+      while (nextT < ctx.currentTime + 0.4) { stepAt(nextT, step, sd); step = (step + 1) % 32; nextT += sd; }
+    }
+    function startMusic() { if (timer || !ctx) return; newSess(); step = 0; nextT = ctx.currentTime + 0.1; timer = setInterval(sched, 120); }
+    function stopMusic() {                                // ค่อยๆ จางเสียงเพลงที่ค้างอยู่
+      if (timer) { clearInterval(timer); timer = null; }
+      if (sess && ctx) {
+        var o = sess, now = ctx.currentTime;
+        o.gain.cancelScheduledValues(now); o.gain.setTargetAtTime(0, now, 0.06);
+        setTimeout(function () { try { o.disconnect(); } catch (e) {} }, 800);
+      }
+      sess = null;
+    }
+    function applyMusic() {
+      if (!ctx) return;
+      var now = ctx.currentTime;
+      musicBus.gain.cancelScheduledValues(now);
+      musicBus.gain.setTargetAtTime(musicOn ? MV : 0, now, 0.08);
+      if (musicOn) startMusic(); else stopMusic();
+    }
+    function duck(sec) {                                  // ลดเสียงเพลงชั่วคราวให้ได้ยินเสียงชนะ/แพ้ชัด
+      if (!ctx || !musicOn) return;
+      var now = ctx.currentTime, g = musicBus.gain;
+      g.cancelScheduledValues(now);
+      g.setTargetAtTime(MV * 0.3, now, 0.05);
+      g.setTargetAtTime(MV, now + sec, 0.4);
+    }
+    function unlock() { if (ensure() && musicOn) applyMusic(); }   // เบราว์เซอร์ต้องรอให้ผู้เล่นแตะก่อนจึงเปิดเสียงได้
+    function save() { try { localStorage.setItem('hanoi-music', musicOn ? 'on' : 'off'); localStorage.setItem('hanoi-sfx', sfxOn ? 'on' : 'off'); } catch (e) {} }
+
+    document.addEventListener('pointerdown', unlock, true);
+    document.addEventListener('keydown', unlock, true);
+    document.addEventListener('visibilitychange', function () {
+      if (!ctx) return;
+      try { if (document.hidden) ctx.suspend(); else ctx.resume(); } catch (e) {}
+    });
+
+    return {
+      play: play, duck: duck,
+      music: function () { return musicOn; },
+      sfx: function () { return sfxOn; },
+      toggleMusic: function () { musicOn = !musicOn; save(); ensure(); applyMusic(); },
+      toggleSfx: function () {
+        sfxOn = !sfxOn; save(); ensure();
+        if (sfxBus) sfxBus.gain.value = sfxOn ? 1 : 0;
+        if (sfxOn) play('pick');
+      }
+    };
+  })();
+  function syncAudioUI() {
+    var on = Snd.music(), mb = $('#musicBtn');
+    mb.setAttribute('aria-pressed', String(on));
+    var lbl = on ? 'เพลงพื้นหลัง: เปิดอยู่ (กดเพื่อปิด)' : 'เพลงพื้นหลัง: ปิดอยู่ (กดเพื่อเปิด)';
+    mb.setAttribute('aria-label', lbl); mb.title = lbl + ' · กด M';
+    $('#sfxBtn').setAttribute('aria-pressed', String(Snd.sfx()));
+  }
+  function changeMusic() {
+    Snd.toggleMusic(); syncAudioUI();
+    setStatus(Snd.music() ? '🎧 เปิดเพลงพื้นหลังแล้ว' : '🔇 ปิดเพลงพื้นหลังแล้ว');
+  }
+
   function doMove(from, to, auto) {
     hintMove = null;
     captureFlight(from, to);
@@ -867,6 +1063,7 @@
     pegs[to].push(d);
     moves++;
     history.push([from, to]);
+    Snd.play('move', reducedMotion() ? 0.03 : flightDuration() / 1000 * 0.9);   // เสียงวางแผ่นตอนแผ่นลงถึงเสา
     lastDrop = to;
     selected = null;
     if (!auto) startClock();
@@ -918,6 +1115,10 @@
   function celebrate() {
     if (!won || !winInfo) return;
     var info = winInfo;
+    Snd.play(info.auto ? 'solved' : info.perfect ? 'perfect' : 'win');
+    var wl = info.auto ? 0.8 : info.perfect ? 2.8 : 1.8;                     // ความยาวเสียงฉลอง (วินาที)
+    if (info.star && info.star.rankUp) Snd.play('rank', wl);
+    Snd.duck(wl + (info.star && info.star.rankUp ? 1.2 : 0.4));
     $('#bnTitle').textContent = info.title;
     $('#bnDetail').textContent = info.detail;
     showStarBanner(info.star);
@@ -947,7 +1148,8 @@
   function updateHeader() {
     var t = totalStars(), r = RANKS[rankIndex(t)];
     $('#starTotalN').textContent = t;
-    $('#rankName').textContent = r.icon + ' ' + r.name;
+    $('#rankName').innerHTML = '<span class="rk-i">' + r.icon + '</span><span class="rk-n"> ' + r.name + '</span>';
+    $('#starTotal').setAttribute('aria-label', 'ยศ ' + r.name + ' ดาวสะสม ' + t);
   }
   function showStarBanner(si) {
     var st = $('#bnStars'), tt = $('#bnTotal');
@@ -975,6 +1177,7 @@
     savePrefs();
     var fails = curFails(), unlocked = fails >= UNLOCK_FAILS;
     var min = minMoves();
+    Snd.play('lose'); Snd.duck(1.8);
     render();
     $('#bnTitle').textContent = '⏰ หมดเวลา!';
     showStarBanner(null);
@@ -1076,20 +1279,23 @@
     if (solving || won || over) return;
     if (i === 0) startClock();            // เริ่มนับเวลาเมื่อคลิกเสา A ครั้งแรก
     if (selected === null) {
-      if (!pegs[i].length) { setStatus('เสา ' + NAMES[i] + ' ไม่มีแผ่น เลือกเสาที่มีแผ่นก่อน', true); return; }
+      if (!pegs[i].length) { Snd.play('bad'); setStatus('เสา ' + NAMES[i] + ' ไม่มีแผ่น เลือกเสาที่มีแผ่นก่อน', true); return; }
       selected = i;
+      Snd.play('pick');
       setStatus('หยิบแผ่นหมายเลข ' + pegs[i][pegs[i].length - 1] + ' จากเสา ' + NAMES[i] + ' แล้ว แตะเสาปลายทางเพื่อวาง');
       render();
       return;
     }
     if (selected === i) {
       selected = null;
+      Snd.play('cancel');
       setStatus('วางแผ่นกลับที่เดิมแล้ว');
       render();
       return;
     }
     if (!canMove(selected, i)) {
       shakePeg = selected;
+      Snd.play('bad');
       setStatus('วางแผ่นใหญ่ทับแผ่นเล็กไม่ได้ เลือกเสาอื่น', true);
       render();
       return;
@@ -1114,6 +1320,7 @@
       hintsLeft--; hintsUsed++; roundTouched = true;
       hintMove = mv; selected = null;
     }
+    Snd.play('hint');
     var top = pegs[hintMove[0]][pegs[hintMove[0]].length - 1];
     setStatus('💡 ใบ้: ย้ายแผ่นหมายเลข ' + top + ' จากเสา ' + NAMES[hintMove[0]] + ' ไปเสา ' + NAMES[hintMove[1]] +
       ' · ใบ้เหลือ ' + hintsLeft + '/' + HINT_PER_ROUND + ' ครั้งในรอบนี้ (ดาวรอบนี้ลด ' + hintsUsed + ' ดวง)');
@@ -1128,6 +1335,7 @@
     pegs[m[0]].push(d);
     moves++;                              // การย้อนกลับนับเป็นการขยับ 1 ครั้งด้วย
     won = false; resetCelebration(); selected = null; lastDrop = null;
+    Snd.play('undo');
     setStatus('ย้อนกลับ 1 ครั้งแล้ว (นับเป็นการขยับ 1 ครั้ง)');
     render();
   }
@@ -1309,7 +1517,11 @@
   function tick() {
     if (solving) return;
     updateTime();
-    if (started && !won && !over && Date.now() - startTime >= limitMs()) timeUp();
+    if (started && !won && !over) {
+      var remain = limitMs() - (Date.now() - startTime), sec = Math.ceil(remain / 1000);
+      if (remain <= 0) timeUp();
+      else if (sec <= 5 && limitMs() > 8000 && sec !== lastTickSec) { lastTickSec = sec; Snd.play('tick'); }   // นับถอยหลัง 5 วินาทีสุดท้าย
+    }
   }
 
   /* ---------- events ---------- */
@@ -1337,8 +1549,12 @@
     else if (k === 'z') undo();
     else if (k === 'h') useHint();
     else if (k === 'r') init();
+    else if (k === 'm') changeMusic();
   });
 
+  $('#musicBtn').addEventListener('click', changeMusic);
+  $('#sfxBtn').addEventListener('click', function () { Snd.toggleSfx(); syncAudioUI(); });
+  syncAudioUI();
   $('#again').addEventListener('click', function () { init(); });
   $('#showSolve').addEventListener('click', function () { startSolve(); });
   document.querySelector('.levels').addEventListener('click', function (e) {
