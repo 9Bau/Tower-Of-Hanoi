@@ -1613,6 +1613,7 @@
         var t = n === 1 ? 0.5 : (size - 1) / (n - 1);
         d.style.setProperty('--w', n === 1 ? 60 : (26 + t * 68).toFixed(1));
         d.style.setProperty('--h', Math.round(8 + t * 242));
+        d.dataset.t = t;
         var nm = document.createElement('span');
         nm.className = 'num';
         nm.textContent = size;
@@ -1647,6 +1648,19 @@
 
       stage.appendChild(col);
     });
+
+    // จอแคบ (เช่น iPhone) + แผ่นน้อย: แผ่นเล็กสุดจะแคบแต่สูง กลายเป็นแคปซูลตั้ง/ลูกบอล
+    // → ยกความกว้างต่ำสุดให้ยาวกว่าความสูงอย่างน้อย ~1.5 เท่า แล้วกระจายแผ่นอื่นตามสัดส่วนเดิมระหว่างค่าต่ำสุด-สูงสุด
+    (function () {
+      var pe = stage.querySelector('.peg'), pw = pe ? pe.clientWidth : 0;
+      if (!pw) return;
+      var lo = Math.min(72, Math.max(26, (dh - 3) * 1.5 / pw * 100));
+      var ds = stage.querySelectorAll('.disk');
+      for (var q = 0; q < ds.length; q++) {
+        var tt = parseFloat(ds[q].dataset.t) || 0;
+        ds[q].style.setProperty('--w', (n === 1 ? Math.max(60, lo) : lo + tt * (94 - lo)).toFixed(1));
+      }
+    })();
 
     lastDrop = null; shakePeg = null;
     var flight = playFlight();
