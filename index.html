@@ -358,6 +358,7 @@
   }
   .label small { display: block; font-weight: 400; color: var(--muted); font-size: .76rem; min-height: 1.2em; }
 
+  .credit { margin: 16px 0 4px; text-align: center; color: var(--muted); font-size: .8rem; letter-spacing: .02em; }
   .help { margin: 14px 2px 0; color: var(--muted); font-size: .85rem; }
   kbd {
     font: inherit; font-size: .8rem;
@@ -480,6 +481,33 @@
     .main { position: sticky; top: env(safe-area-inset-top, 0px); }
     .help { display: none; }
   }
+
+  /* ---------- iPhone แนวตั้ง: ย่อเมนู เพิ่มพื้นที่กระดานเกม ---------- */
+  @media (max-width: 560px) and (orientation: portrait) {
+    .app { padding-top: 6px; padding-bottom: 14px; }
+    header h1 { font-size: 1.3rem; }
+    header .star-total { min-height: 34px; padding: 2px 9px; font-size: .9rem; }
+    .controls { margin-top: 6px; padding: 8px; gap: 6px 8px; border-radius: 12px; }
+    .settings { flex-wrap: nowrap; gap: 6px; }
+    .stepper { gap: 6px; flex: 0 0 auto; }
+    .stepper .lbl { font-size: .8rem; }
+    .stepper output { font-size: 1.1rem; }
+    .btn.round { width: 38px; min-height: 38px; font-size: 1.2rem; }
+    .levels { gap: 4px; flex-wrap: nowrap; }
+    .levels .lbl { display: none; }
+    .levels .lv { min-width: 40px; min-height: 38px; padding: 0 6px; font-size: 1.2rem; line-height: 1; }
+    .lv-n { display: none; }
+    .btns .btn { min-height: 38px; }
+    .stats { margin-top: 6px; gap: 5px; }
+    .stat { padding: 3px 7px; border-radius: 9px; }
+    .stat .k { font-size: .66rem; }
+    .stat .v { font-size: 1rem; }
+    .timebar { margin-top: 24px; }
+    .time-animal { font-size: 1.3rem; }
+    .status { margin-top: 6px; font-size: .86rem; line-height: 1.35; }
+    .stage { margin-top: 6px; border-radius: 16px; }
+    .help { font-size: .78rem; margin-top: 10px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
     #timeFill, .time-animal { transition: none !important; animation: none !important; }
@@ -499,17 +527,17 @@
   <section class="controls" aria-label="ตั้งค่าเกม">
     <div class="settings">
       <div class="stepper">
-        <span class="lbl" id="diskLbl">จำนวนแผ่น</span>
+        <span class="lbl" id="diskLbl"><span class="k-l">จำนวนแผ่น</span><span class="k-s">แผ่น</span></span>
         <button class="btn round" id="minus" aria-label="ลดจำนวนแผ่น">−</button>
         <output id="nOut" aria-labelledby="diskLbl">2</output>
         <button class="btn round" id="plus" aria-label="เพิ่มจำนวนแผ่น">+</button>
       </div>
       <div class="levels" role="group" aria-label="โหมดความเร็ว (เวลาจำกัด)">
         <span class="lbl">ความเร็ว</span>
-        <button class="btn lv" data-lv="veryeasy" aria-pressed="false">🐢 เต่า</button>
-        <button class="btn lv" data-lv="easy" aria-pressed="true">🐇 กระต่าย</button>
-        <button class="btn lv" data-lv="normal" aria-pressed="false">🐆 ชีตาร์</button>
-        <button class="btn lv" data-lv="advanced" aria-pressed="false">🦅 เหยี่ยว</button>
+        <button class="btn lv" data-lv="veryeasy" aria-pressed="false" aria-label="เต่า" title="เต่า"><span class="lv-i">🐢</span><span class="lv-n"> เต่า</span></button>
+        <button class="btn lv" data-lv="easy" aria-pressed="true" aria-label="กระต่าย" title="กระต่าย"><span class="lv-i">🐇</span><span class="lv-n"> กระต่าย</span></button>
+        <button class="btn lv" data-lv="normal" aria-pressed="false" aria-label="ชีตาร์" title="ชีตาร์"><span class="lv-i">🐆</span><span class="lv-n"> ชีตาร์</span></button>
+        <button class="btn lv" data-lv="advanced" aria-pressed="false" aria-label="เหยี่ยว" title="เหยี่ยว"><span class="lv-i">🦅</span><span class="lv-n"> เหยี่ยว</span></button>
       </div>
     </div>
     <div class="btns">
@@ -562,6 +590,7 @@
     · ใบ้ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่แต่ถูกหักแต้มใบ้สะสม 3 แต้ม
     <span class="kbd-hint">· ใช้คีย์บอร์ดได้: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา, <kbd>Z</kbd> ย้อนกลับ, <kbd>H</kbd> บอกใบ้, <kbd>R</kbd> เริ่มใหม่</span>
   </p>
+  <footer class="credit">Developed by 9Bau · 2026</footer>
   </div>
 </div>
 
@@ -728,7 +757,19 @@
       var fit = Math.floor((h - 150) / (n + 1));
       base = Math.max(12, Math.min(base, fit));
     }
+    if (w <= 560 && h > w) base = phoneFitDh();        // มือถือแนวตั้ง: ขยายกระดานให้เต็มพื้นที่ที่เหลือ
     return base;
+  }
+  var fitCache = { k: '', v: 30 };
+  function phoneFitDh() {
+    var k = n + '|' + window.innerWidth + 'x' + window.innerHeight;
+    if (fitCache.k === k) return fitCache.v;           // คำนวณซ้ำเมื่อขนาดจอ/จำนวนแผ่นเปลี่ยนเท่านั้น (กันกระดานขยับระหว่างเล่น)
+    var top = stage.getBoundingClientRect().top + (window.pageYOffset || 0);
+    // พื้นที่ที่เหลือ = ความสูงจอ − ส่วนบนของหน้า − แถบ Safari ด้านล่าง(~90) − ส่วนประกอบของกระดานที่ไม่ใช่แผ่น(~120)
+    var v = Math.floor((window.innerHeight - top - 90 - 120) / (n + 1));
+    v = Math.max(20, Math.min(46, v));
+    fitCache = { k: k, v: v };
+    return v;
   }
   function setStatus(msg, bad) {
     statusEl.textContent = msg;
@@ -1156,6 +1197,7 @@
         d.style.setProperty('--w', n === 1 ? 60 : (26 + t * 68).toFixed(1));
         d.style.setProperty('--h', Math.round(8 + t * 242));
         d.textContent = size;
+        if (dh >= 38) d.style.fontSize = '1rem';
         if (isTop && selected === i) d.classList.add('lifted');
         if (isTop && shakePeg === i) d.classList.add('shake');
         if (isTop && hintMove && hintMove[0] === i) d.classList.add('hinted');
