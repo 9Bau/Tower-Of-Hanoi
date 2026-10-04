@@ -1834,7 +1834,10 @@
     document.body.classList.add('fs');
     if (paused) { startTime += Date.now() - pausedAt; paused = false; }   // เล่นต่อ: เวลาที่หยุดไว้ไม่ถูกนับ
     var el = document.documentElement, rq = el.requestFullscreen || el.webkitRequestFullscreen;
-    if (rq) {                                          // เดสก์ท็อป/Android/iPad ใช้เต็มจอจริง; iPhone ใช้โหมดเต็มหน้าจอแทน
+    // iPad/iPhone: ไม่ใช้เต็มจอจริงของ Safari เพราะมันบล็อกการ "พิมพ์" ในโหมดเต็มจอ และเด้งหน้าต่าง
+    // "It looks like you are typing while in full screen" ซ้ำๆ ระหว่างเล่น → ใช้โหมดเต็มหน้าจอของเกมเองแทน (ไม่มีหน้าต่างเด้ง)
+    var iOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (rq && !iOS) {                                  // เดสก์ท็อป/Android ใช้เต็มจอจริง
       try { var r = rq.call(el, { navigationUI: 'hide' }); if (r && r.catch) r.catch(function () {}); } catch (e) {}
     }
     relayout();
