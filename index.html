@@ -1006,18 +1006,27 @@
     statusEl.classList.toggle('bad', !!bad);
   }
   function minMoves() { return Math.pow(2, n) - 1; }
-  // ปัดเวลาจำกัดให้ลงตัว (ใกล้ที่สุด):
-  //  • ต่ำกว่า 1 นาที (ด่านที่เป็นวินาที) → ปัดเป็นวินาทีที่ลงท้าย 00 หรือ 05 (ขั้นต่ำ 5 วินาที)
-  //  • 1–5 นาที → ปัดเป็นนาทีเต็ม
-  //  • 5 นาทีขึ้นไป → ปัดเป็นนาทีที่ลงท้าย 00 หรือ 05 (เช่น 30:01 → 30:00, 1:24:24 → 1:25:00)
-  function roundLimitSec(sec) {
-    if (sec < 60) return Math.max(5, Math.round(sec / 5) * 5);
-    var m = sec / 60;
-    return (m >= 5 ? Math.round(m / 5) * 5 : Math.max(1, Math.round(m))) * 60;
-  }
+  // ตารางเวลาจำกัด (วินาที) กำหนดตรงๆ ต่อด่าน — เรียงตามจำนวนแผ่น 2..12
+  // คอลัมน์: เต่า(veryeasy), กระต่าย(easy), ชีตาร์(normal), เหยี่ยว(advanced)
+  // กำหนดเองเพื่อให้ทุกโหมดในแต่ละด่านมีเวลาไม่ซ้ำกัน และเป็นตัวเลขกลมอ่านง่าย
+  var LIMIT_TABLE = {
+    2:  { veryeasy: 40,    easy: 30,    normal: 20,    advanced: 15 },
+    3:  { veryeasy: 50,    easy: 40,    normal: 30,    advanced: 20 },
+    4:  { veryeasy: 60,    easy: 50,    normal: 40,    advanced: 30 },
+    5:  { veryeasy: 120,   easy: 90,    normal: 60,    advanced: 50 },
+    6:  { veryeasy: 240,   easy: 180,   normal: 120,   advanced: 90 },
+    7:  { veryeasy: 480,   easy: 360,   normal: 240,   advanced: 180 },
+    8:  { veryeasy: 900,   easy: 660,   normal: 480,   advanced: 360 },
+    9:  { veryeasy: 1800,  easy: 1320,  normal: 900,   advanced: 660 },
+    10: { veryeasy: 3600,  easy: 2700,  normal: 1800,  advanced: 1320 },
+    11: { veryeasy: 7200,  easy: 5400,  normal: 3600,  advanced: 2700 },
+    12: { veryeasy: 14400, easy: 10800, normal: 7200,  advanced: 5400 }
+  };
   function limitMs() {
-    var L = LEVELS[level];
-    return roundLimitSec(Math.ceil(minMoves() * L.per) + L.base) * 1000;
+    var row = LIMIT_TABLE[n];
+    if (row && row[level]) return row[level] * 1000;
+    var L = LEVELS[level];   // สำรอง: ด่านนอกตาราง ใช้สูตรเดิม
+    return (Math.ceil(minMoves() * L.per) + L.base) * 1000;
   }
   function startClock() {
     if (!started) { started = true; startTime = Date.now(); }
