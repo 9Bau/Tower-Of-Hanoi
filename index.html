@@ -648,6 +648,10 @@
     .stat .v-sub { display: block; margin: 1px 0 0; font-size: .68rem; line-height: 1.2; }
     .stat .v-sub:empty { display: none; }
   }
+  @media (max-width: 480px) {
+    .star-tbl { font-size: .9rem; }
+    .star-tbl th.rowh { font-size: .9rem; padding-left: 3px; padding-right: 3px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .start-btn { animation: none !important; }
     .disk, .disk.drop, .disk.shake, .disk.cheer, .disk.hinted, .hint-arrow, .col.win, .goal-flag, .banner { animation: none !important; transition: none !important; }
@@ -786,17 +790,20 @@
 
 <script>
 (function () {
-  var MIN_N = 2, MAX_N = 10;
+  var MIN_N = 2, MAX_N = 12;
   var NAMES = ['A', 'B', 'C'];
 
   var $ = function (s) { return document.querySelector(s); };
   var stage = $('#stage'), statusEl = $('#status'), banner = $('#banner');
 
   var LEVELS = {
-    veryeasy: { icon: '🐢', name: '🐢 เต่า', per: 10,   base: 30 },
-    easy:     { icon: '🐇', name: '🐇 กระต่าย',     per: 6,    base: 20 },
-    normal:   { icon: '🐆', name: '🐆 ชีตาร์',   per: 3,    base: 15 },
-    advanced: { icon: '🦅', name: '🦅 เหยี่ยว',   per: 1.75, base: 10 }
+    // เวลาจำกัด = จำนวนครั้งที่ย้ายน้อยที่สุด × per วินาที + base วินาที
+    // ปรับตามการทดสอบจริง: 10 แผ่นโหมดเหยี่ยวผู้เล่นทำได้ไม่เกิน 20 นาที → เหยี่ยวให้ประมาณ 1.3 วินาทีต่อครั้ง
+    // แล้วไล่โหมดอื่นขึ้นเป็นขั้นๆ (~×1.4 ต่อขั้น) จนเต่าไม่เหลือเฟือเกินไป
+    veryeasy: { icon: '🐢', name: '🐢 เต่า',     per: 3.6, base: 30 },
+    easy:     { icon: '🐇', name: '🐇 กระต่าย',  per: 2.6, base: 20 },
+    normal:   { icon: '🐆', name: '🐆 ชีตาร์',   per: 1.8, base: 15 },
+    advanced: { icon: '🦅', name: '🦅 เหยี่ยว',  per: 1.3, base: 10 }
   };
   var UNLOCK_FAILS = 3;
   var level = 'easy', over = false;
@@ -950,9 +957,11 @@
   /* ---------- helpers ---------- */
   function fmtTime(ms) {
     var s = Math.floor(ms / 1000);
-    var m = Math.floor(s / 60);
+    var h = Math.floor(s / 3600);
+    var m = Math.floor(s / 60) % 60;
     s = s % 60;
-    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    var mm = (m < 10 ? '0' : '') + m, ss = (s < 10 ? '0' : '') + s;
+    return h > 0 ? h + ':' + mm + ':' + ss : mm + ':' + ss;     // เกิน 1 ชั่วโมงแสดงเป็น ชม:นาที:วินาที (ด่าน 11–12 แผ่นมีเวลาหลายชั่วโมง)
   }
   function diskHeight() {
     if (document.body.classList.contains('fs')) return fsFitDh();   // โหมดเต็มจอ: ขยายแผ่นให้พอดีพื้นที่ที่เหลือ
@@ -997,9 +1006,18 @@
     statusEl.classList.toggle('bad', !!bad);
   }
   function minMoves() { return Math.pow(2, n) - 1; }
+  // ปัดเวลาจำกัดให้ลงตัว (ใกล้ที่สุด):
+  //  • ต่ำกว่า 1 นาที (ด่านที่เป็นวินาที) → ปัดเป็นวินาทีที่ลงท้าย 00 หรือ 05 (ขั้นต่ำ 5 วินาที)
+  //  • 1–5 นาที → ปัดเป็นนาทีเต็ม
+  //  • 5 นาทีขึ้นไป → ปัดเป็นนาทีที่ลงท้าย 00 หรือ 05 (เช่น 30:01 → 30:00, 1:24:24 → 1:25:00)
+  function roundLimitSec(sec) {
+    if (sec < 60) return Math.max(5, Math.round(sec / 5) * 5);
+    var m = sec / 60;
+    return (m >= 5 ? Math.round(m / 5) * 5 : Math.max(1, Math.round(m))) * 60;
+  }
   function limitMs() {
     var L = LEVELS[level];
-    return (Math.ceil(minMoves() * L.per) + L.base) * 1000;
+    return roundLimitSec(Math.ceil(minMoves() * L.per) + L.base) * 1000;
   }
   function startClock() {
     if (!started) { started = true; startTime = Date.now(); }
