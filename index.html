@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Tower of Hanoi">
-<title>Tower of Hanoi – หอคอยฮานอย</title>
+<title>Tower of Hanoi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
@@ -598,6 +598,7 @@
   /* ---------- ปุ่มเสียง ---------- */
   .audio { display: flex; gap: 4px; margin-left: auto; }
   .snd-btn { width: 36px; min-width: 36px; min-height: 36px; padding: 0; font-size: 1.05rem; line-height: 1; position: relative; }
+  .lang-btn { font-size: .78rem; font-weight: 700; letter-spacing: .02em; }
   .snd-btn[aria-pressed="false"] { opacity: .5; }
   .snd-btn[aria-pressed="false"]::after { content: ''; position: absolute; left: 22%; right: 22%; top: 50%; height: 2px; border-radius: 2px; background: currentColor; transform: rotate(-40deg); }
 
@@ -668,57 +669,58 @@
 <div class="app">
   <div class="side">
   <header>
-    <button class="btn snd-btn exit-fs" id="exitFs" aria-label="ออกจากโหมดเต็มจอ" title="ออกจากโหมดเต็มจอ (Esc)">✕</button>
+    <button class="btn snd-btn exit-fs" id="exitFs" data-i18n-attr="aria-label:aria.exitFs;title:title.exitFs">✕</button>
     <h1>Tower of Hanoi</h1>
-    <div class="audio" role="group" aria-label="เสียง">
-      <button class="btn snd-btn" id="musicBtn" aria-pressed="true" aria-label="ดนตรีผ่อนคลาย" title="ดนตรีผ่อนคลาย (กด M)">🎵</button>
-      <button class="btn snd-btn" id="sfxBtn" aria-pressed="true" aria-label="เสียงเอฟเฟกต์" title="เสียงเอฟเฟกต์">🔊</button>
+    <div class="audio" role="group" data-i18n-attr="aria-label:aria.settings">
+      <button class="btn snd-btn lang-btn" id="langBtn" type="button"></button>
+      <button class="btn snd-btn" id="musicBtn" aria-pressed="true" >🎵</button>
+      <button class="btn snd-btn" id="sfxBtn" aria-pressed="true" data-i18n-attr="aria-label:aria.sfx;title:aria.sfx">🔊</button>
     </div>
-    <button class="btn star-total" id="starTotal" aria-haspopup="dialog" title="ยศและสรุปดาวสะสม"><span class="rk" id="rankName"></span><span class="st">★</span> <span id="starTotalN">0</span></button>
-    <p>ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C โดยย้ายได้ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก</p>
+    <button class="btn star-total" id="starTotal" aria-haspopup="dialog" data-i18n-attr="title:title.starTotal"><span class="rk" id="rankName"></span><span class="st">★</span> <span id="starTotalN">0</span></button>
+    <p data-i18n="hdr.intro"></p>
   </header>
 
-  <section class="controls" aria-label="ตั้งค่าเกม">
+  <section class="controls" data-i18n-attr="aria-label:aria.controls">
     <div class="settings">
       <div class="stepper">
-        <span class="lbl" id="diskLbl"><span class="k-l">จำนวนแผ่น</span><span class="k-s">แผ่น</span></span>
-        <button class="btn round" id="minus" aria-label="ลดจำนวนแผ่น">−</button>
+        <span class="lbl" id="diskLbl"><span class="k-l" data-i18n="ctl.disksL"></span><span class="k-s" data-i18n="ctl.disksS"></span></span>
+        <button class="btn round" id="minus" data-i18n-attr="aria-label:aria.minus">−</button>
         <output id="nOut" aria-labelledby="diskLbl">2</output>
-        <button class="btn round" id="plus" aria-label="เพิ่มจำนวนแผ่น">+</button>
+        <button class="btn round" id="plus" data-i18n-attr="aria-label:aria.plus">+</button>
       </div>
-      <div class="levels" role="group" aria-label="โหมดความเร็ว (เวลาจำกัด)">
-        <span class="lbl">ความเร็ว</span>
-        <button class="btn lv" data-lv="veryeasy" aria-pressed="false" aria-label="เต่า" title="เต่า"><span class="lv-i">🐢</span><span class="lv-n"> เต่า</span></button>
-        <button class="btn lv" data-lv="easy" aria-pressed="true" aria-label="กระต่าย" title="กระต่าย"><span class="lv-i">🐇</span><span class="lv-n"> กระต่าย</span></button>
-        <button class="btn lv" data-lv="normal" aria-pressed="false" aria-label="ชีตาร์" title="ชีตาร์"><span class="lv-i">🐆</span><span class="lv-n"> ชีตาร์</span></button>
-        <button class="btn lv" data-lv="advanced" aria-pressed="false" aria-label="เหยี่ยว" title="เหยี่ยว"><span class="lv-i">🦅</span><span class="lv-n"> เหยี่ยว</span></button>
-        <button class="btn lv" data-lv="perfect" aria-pressed="false" aria-label="ผึ้งพิเศษ (ย้ายผิดตกทันที)" title="ผึ้งพิเศษ: ย้ายผิดจากทางที่ดีที่สุดแม้ครั้งเดียว = ตกทันที"><span class="lv-i">🐝</span><span class="lv-n"> ผึ้งพิเศษ</span></button>
+      <div class="levels" role="group" data-i18n-attr="aria-label:aria.levels">
+        <span class="lbl" data-i18n="ctl.speed"></span>
+        <button class="btn lv" data-lv="veryeasy" aria-pressed="false"><span class="lv-i">🐢</span><span class="lv-n"></span></button>
+        <button class="btn lv" data-lv="easy" aria-pressed="true"><span class="lv-i">🐇</span><span class="lv-n"></span></button>
+        <button class="btn lv" data-lv="normal" aria-pressed="false"><span class="lv-i">🐆</span><span class="lv-n"></span></button>
+        <button class="btn lv" data-lv="advanced" aria-pressed="false"><span class="lv-i">🦅</span><span class="lv-n"></span></button>
+        <button class="btn lv" data-lv="perfect" aria-pressed="false"><span class="lv-i">🐝</span><span class="lv-n"></span></button>
       </div>
     </div>
     <div class="btns">
       <div class="grp">
-        <button class="btn" id="undo">ย้อนกลับ</button>
-        <button class="btn" id="reset">เริ่มใหม่</button>
-        <button class="btn hint-btn" id="hint" title="บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H)">💡 <span class="hint-lbl">ใบ้</span> <span id="hintN">0</span></button>
+        <button class="btn" id="undo" data-i18n="btn.undo"></button>
+        <button class="btn" id="reset" data-i18n="btn.reset"></button>
+        <button class="btn hint-btn" id="hint">💡 <span class="hint-lbl" data-i18n="btn.hint"></span> <span id="hintN">0</span></button>
       </div>
       <div class="grp">
-        <button class="btn primary" id="solve">ดูเฉลย</button>
-        <select class="btn" id="speed" aria-label="ความเร็วเฉลย" title="ความเร็วเฉลย">
-          <option value="1600">⏱ ช้า</option>
-          <option value="1000" selected>⏱ ปกติ</option>
-          <option value="500">⏱ เร็ว</option>
-          <option value="150">⏱ เร็วมาก</option>
+        <button class="btn primary" id="solve" data-i18n="btn.solve"></button>
+        <select class="btn" id="speed" data-i18n-attr="aria-label:aria.speed;title:aria.speed">
+          <option value="1600" data-i18n="sp.slow"></option>
+          <option value="1000" selected data-i18n="sp.normal"></option>
+          <option value="500" data-i18n="sp.fast"></option>
+          <option value="150" data-i18n="sp.vfast"></option>
         </select>
       </div>
     </div>
     <p class="limit-note" id="limitNote"></p>
   </section>
 
-  <section class="stats" aria-label="สถิติ">
-    <div class="stat"><div class="k"><span class="k-l">จำนวนครั้งที่ย้าย</span><span class="k-s">ย้ายแล้ว</span></div><div class="v" id="moves">0</div></div>
-    <div class="stat"><div class="k"><span class="k-l">น้อยที่สุดที่เป็นไปได้</span><span class="k-s">ขั้นต่ำ</span></div><div class="v" id="minMoves">15</div></div>
-    <div class="stat"><div class="k"><span class="k-l">เวลาที่เหลือ</span><span class="k-s">เวลา</span></div><div class="v" id="time">00:00</div></div>
-    <div class="stat"><div class="k"><span class="k-l">สถิติดีที่สุด</span><span class="k-s">ดีที่สุด</span></div><div class="v"><span id="best">–</span><span class="v-sub" id="bestTime"></span></div></div>
+  <section class="stats" data-i18n-attr="aria-label:aria.stats">
+    <div class="stat"><div class="k"><span class="k-l" data-i18n="stat.movesL"></span><span class="k-s" data-i18n="stat.movesS"></span></div><div class="v" id="moves">0</div></div>
+    <div class="stat"><div class="k"><span class="k-l" data-i18n="stat.minL"></span><span class="k-s" data-i18n="stat.minS"></span></div><div class="v" id="minMoves">15</div></div>
+    <div class="stat"><div class="k"><span class="k-l" data-i18n="stat.timeL"></span><span class="k-s" data-i18n="stat.timeS"></span></div><div class="v" id="time">00:00</div></div>
+    <div class="stat"><div class="k"><span class="k-l" data-i18n="stat.bestL"></span><span class="k-s" data-i18n="stat.bestS"></span></div><div class="v"><span id="best">–</span><span class="v-sub" id="bestTime"></span></div></div>
   </section>
   <div class="timebar" id="timebar" aria-hidden="true"><div id="timeFill"></div><div class="time-animal" id="timeAnimal"><span id="timeAnimalIcon"></span></div></div>
 
@@ -730,9 +732,9 @@
     <div class="bn-total" id="bnTotal"></div>
     <div class="bn-rank" id="bnRank"></div>
     <div class="bn-actions">
-      <button class="btn primary" id="again">เล่นอีกครั้ง</button>
-      <button class="btn" id="harder">เพิ่มความท้าทาย</button>
-      <button class="btn primary" id="showSolve" hidden>ดูเฉลย</button>
+      <button class="btn primary" id="again"></button>
+      <button class="btn" id="harder"></button>
+      <button class="btn primary" id="showSolve" data-i18n="btn.solve" hidden></button>
     </div>
   </div>
 
@@ -741,33 +743,33 @@
   <div class="stage-wrap" id="stageWrap">
     <div class="stage" id="stage"></div>
     <div class="start-overlay" id="startOverlay">
-      <button class="start-btn" id="startBtn" type="button"><span class="sb-i" aria-hidden="true">▶</span> <span id="startLbl">เริ่มเล่น</span></button>
+      <button class="start-btn" id="startBtn" type="button"><span class="sb-i" aria-hidden="true">▶</span> <span id="startLbl"></span></button>
     </div>
   </div>
 
   <div class="help">
-    <h2>📖 วิธีเล่น</h2>
+    <h2 data-i18n="help.h2"></h2>
     <ol>
-      <li><b>เป้าหมาย:</b> ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C</li>
-      <li><b>กติกา:</b> ย้ายได้ครั้งละ 1 แผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก</li>
-      <li><b>วิธีย้าย:</b> แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง</li>
-      <li><b>เวลา:</b> เริ่มนับถอยหลังเมื่อหยิบแผ่นแรก</li>
-      <li><b>🐝 ผึ้งพิเศษ:</b> โหมดพิเศษ ต้องย้ายตามทางที่ดีที่สุด (2ⁿ−1 ครั้ง) เท่านั้น ย้ายผิดแม้ครั้งเดียว = ตกทันที และไม่มีปุ่มย้อนกลับ</li>
+      <li data-i18n-html="help.goal"></li>
+      <li data-i18n-html="help.rules"></li>
+      <li data-i18n-html="help.how"></li>
+      <li data-i18n-html="help.time"></li>
+      <li data-i18n-html="help.bee"></li>
     </ol>
 
-    <h3>⭐ ดาวและยศ</h3>
+    <h3 data-i18n="help.h3stars"></h3>
     <ul>
-      <li><b>ได้ดาว:</b> ผ่านด่านด้วยจำนวนครั้งที่ย้ายน้อยจะได้ดาวมาก สูงสุด 5 ดาวต่อด่าน</li>
-      <li><b>ดูเมนูดาว:</b> กดปุ่ม <b>★ ดาว</b> มุมขวาบน (มีไอคอนยศอยู่ข้างๆ) จะเปิดเมนูแสดงยศปัจจุบัน ดาวสะสม ตารางดาวของแต่ละด่าน และปุ่มรีเซ็ตสถิติ</li>
+      <li data-i18n-html="help.earn"></li>
+      <li data-i18n-html="help.menu"></li>
     </ul>
 
-    <h3>💡 ใบ้และเฉลย</h3>
+    <h3 data-i18n="help.h3hints"></h3>
     <ul>
-      <li><b>ใบ้:</b> ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่ แต่ถูกหักแต้มใบ้สะสม 3 แต้ม</li>
-      <li><b>เฉลย:</b> ปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (โหมด 🐝 ผึ้งพิเศษ: ย้ายผิดไม่นับ) (นับแยกตามโหมดความเร็วและจำนวนแผ่น) ปลดแล้วปลดถาวร</li>
+      <li data-i18n-html="help.hint"></li>
+      <li data-i18n-html="help.solution"></li>
     </ul>
 
-    <div class="kbd-hint"><b>⌨️ คีย์ลัด:</b> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา · <kbd>Z</kbd> ย้อนกลับ · <kbd>H</kbd> บอกใบ้ · <kbd>R</kbd> เริ่มใหม่ · <kbd>M</kbd> เปิด/ปิดดนตรี</div>
+    <div class="kbd-hint" data-i18n-html="help.kbd"></div>
   </div>
   <footer class="credit">Developed by 9Bau · 2026</footer>
   </div>
@@ -775,21 +777,21 @@
 
 <div class="modal" id="starModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="smTitle">
-    <h2 id="smTitle">★ ยศและดาวสะสม</h2>
+    <h2 id="smTitle" data-i18n="sm.title"></h2>
     <div class="rank-box">
       <div class="rank-now" id="smRank"></div>
       <div class="rank-bar"><div class="rank-fill" id="smRankFill"></div></div>
       <div class="rank-next" id="smRankNext"></div>
       <div class="rank-ladder" id="smLadder"></div>
     </div>
-    <p class="modal-sum">รวม <b id="smTotal">0</b> / <span id="smMax">0</span> ดาว · นับดาวที่ดีที่สุดของแต่ละด่าน (โหมดความเร็ว + จำนวนแผ่น)</p>
+    <p class="modal-sum" data-i18n-html="sm.sum"></p>
     <div class="rules" id="smRules"></div>
     <div class="tbl-wrap"><table class="star-tbl" id="smTable"></table></div>
     <p class="modal-note" id="smHintInfo"></p>
-    <p class="modal-note">รีเซ็ตสถิติ = ล้างดาวสะสม ยศ สถิติดีที่สุด การปลดล็อกเฉลยของทุกด่าน และคืนโควตาบอกใบ้เป็นเริ่มต้น แล้วกลับไปเริ่มที่ด่านแรก (2 แผ่น) ส่วนโหมดความเร็วที่เลือกไว้ไม่เปลี่ยน</p>
+    <p class="modal-note" data-i18n="sm.note"></p>
     <div class="modal-actions">
-      <button class="btn danger" id="smReset">รีเซ็ตสถิติทั้งหมด</button>
-      <button class="btn primary" id="smClose">ปิด</button>
+      <button class="btn danger" id="smReset" data-i18n="sm.reset"></button>
+      <button class="btn primary" id="smClose" data-i18n="sm.close"></button>
     </div>
   </div>
 </div>
@@ -798,6 +800,227 @@
 (function () {
   var MIN_N = 2, MAX_N = 12;
   var NAMES = ['A', 'B', 'C'];
+  /* ---------- ภาษา / language (TH default, EN) ---------- */
+  var LANG = 'th';
+  try { var _sl = localStorage.getItem('hanoi-lang'); if (_sl === 'en' || _sl === 'th') LANG = _sl; } catch (e) {}
+  var I18N = {
+    th: {
+      'doc.title': 'Tower of Hanoi – หอคอยฮานอย',
+      'aria.exitFs': 'ออกจากโหมดเต็มจอ', 'title.exitFs': 'ออกจากโหมดเต็มจอ (Esc)',
+      'aria.settings': 'ภาษาและเสียง',
+      'title.lang': 'เปลี่ยนเป็นภาษาอังกฤษ (English)',
+      'aria.music': 'ดนตรีผ่อนคลาย', 'title.music': 'ดนตรีผ่อนคลาย (กด M)',
+      'aria.sfx': 'เสียงเอฟเฟกต์',
+      'title.starTotal': 'ยศและสรุปดาวสะสม',
+      'hdr.intro': 'ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C โดยย้ายได้ครั้งละหนึ่งแผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก',
+      'aria.controls': 'ตั้งค่าเกม',
+      'ctl.disksL': 'จำนวนแผ่น', 'ctl.disksS': 'แผ่น',
+      'aria.minus': 'ลดจำนวนแผ่น', 'aria.plus': 'เพิ่มจำนวนแผ่น',
+      'aria.levels': 'โหมดความเร็ว (เวลาจำกัด)', 'ctl.speed': 'ความเร็ว',
+      'lv.veryeasy': 'เต่า', 'lv.easy': 'กระต่าย', 'lv.normal': 'ชีตาร์', 'lv.advanced': 'เหยี่ยว', 'lv.perfect': 'ผึ้งพิเศษ',
+      'aria.perfect': 'ผึ้งพิเศษ (ย้ายผิดตกทันที)', 'title.perfect': 'ผึ้งพิเศษ: ย้ายผิดจากทางที่ดีที่สุดแม้ครั้งเดียว = ตกทันที',
+      'btn.undo': 'ย้อนกลับ', 'btn.reset': 'เริ่มใหม่', 'btn.hint': 'ใบ้',
+      'title.hint0': 'บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H)',
+      'btn.solve': 'ดูเฉลย', 'btn.stopSolve': 'หยุดเฉลย',
+      'aria.speed': 'ความเร็วเฉลย',
+      'sp.slow': '⏱ ช้า', 'sp.normal': '⏱ ปกติ', 'sp.fast': '⏱ เร็ว', 'sp.vfast': '⏱ เร็วมาก',
+      'aria.stats': 'สถิติ',
+      'stat.movesL': 'จำนวนครั้งที่ย้าย', 'stat.movesS': 'ย้ายแล้ว',
+      'stat.minL': 'น้อยที่สุดที่เป็นไปได้', 'stat.minS': 'ขั้นต่ำ',
+      'stat.timeL': 'เวลาที่เหลือ', 'stat.timeS': 'เวลา',
+      'stat.bestL': 'สถิติดีที่สุด', 'stat.bestS': 'ดีที่สุด',
+      'start.play': 'เริ่มเล่น', 'start.cont': 'เล่นต่อ',
+      'help.h2': '📖 วิธีเล่น',
+      'help.goal': '<b>เป้าหมาย:</b> ย้ายแผ่นทั้งหมดจากเสา A ไปเสา C',
+      'help.rules': '<b>กติกา:</b> ย้ายได้ครั้งละ 1 แผ่น และห้ามวางแผ่นใหญ่ทับแผ่นเล็ก',
+      'help.how': '<b>วิธีย้าย:</b> แตะเสาเพื่อหยิบแผ่นบนสุด แล้วแตะเสาปลายทางเพื่อวาง',
+      'help.time': '<b>เวลา:</b> เริ่มนับถอยหลังเมื่อหยิบแผ่นแรก',
+      'help.bee': '<b>🐝 ผึ้งพิเศษ:</b> โหมดพิเศษ ต้องย้ายตามทางที่ดีที่สุด (2ⁿ−1 ครั้ง) เท่านั้น ย้ายผิดแม้ครั้งเดียว = ตกทันที และไม่มีปุ่มย้อนกลับ',
+      'help.h3stars': '⭐ ดาวและยศ',
+      'help.earn': '<b>ได้ดาว:</b> ผ่านด่านด้วยจำนวนครั้งที่ย้ายน้อยจะได้ดาวมาก สูงสุด 5 ดาวต่อด่าน',
+      'help.menu': '<b>ดูเมนูดาว:</b> กดปุ่ม <b>★ ดาว</b> มุมขวาบน (มีไอคอนยศอยู่ข้างๆ) จะเปิดเมนูแสดงยศปัจจุบัน ดาวสะสม ตารางดาวของแต่ละด่าน และปุ่มรีเซ็ตสถิติ',
+      'help.h3hints': '💡 ใบ้และเฉลย',
+      'help.hint': '<b>ใบ้:</b> ใช้ได้ 3 ครั้งต่อรอบ เริ่มรอบใหม่จะได้ใบ้ใหม่ แต่ถูกหักแต้มใบ้สะสม 3 แต้ม',
+      'help.solution': '<b>เฉลย:</b> ปลดล็อกเมื่อหมดเวลาครบ 3 ครั้งในด่านนั้น (โหมด 🐝 ผึ้งพิเศษ: ย้ายผิดไม่นับ) (นับแยกตามโหมดความเร็วและจำนวนแผ่น) ปลดแล้วปลดถาวร',
+      'help.kbd': '<b>⌨️ คีย์ลัด:</b> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> เลือกเสา · <kbd>Z</kbd> ย้อนกลับ · <kbd>H</kbd> บอกใบ้ · <kbd>R</kbd> เริ่มใหม่ · <kbd>M</kbd> เปิด/ปิดดนตรี',
+      'sm.title': '★ ยศและดาวสะสม',
+      'sm.sum': 'รวม <b id="smTotal">0</b> / <span id="smMax">0</span> ดาว · นับดาวที่ดีที่สุดของแต่ละด่าน (โหมดความเร็ว + จำนวนแผ่น)',
+      'sm.note': 'รีเซ็ตสถิติ = ล้างดาวสะสม ยศ สถิติดีที่สุด การปลดล็อกเฉลยของทุกด่าน และคืนโควตาบอกใบ้เป็นเริ่มต้น แล้วกลับไปเริ่มที่ด่านแรก (2 แผ่น) ส่วนโหมดความเร็วที่เลือกไว้ไม่เปลี่ยน',
+      'sm.reset': 'รีเซ็ตสถิติทั้งหมด', 'sm.confirm': 'กดอีกครั้งเพื่อยืนยันรีเซ็ต', 'sm.close': 'ปิด',
+      'rank.0': 'มือใหม่', 'rank.1': 'เด็กฝึก', 'rank.2': 'นักย้ายแผ่น', 'rank.3': 'ช่างฝีมือ', 'rank.4': 'ผู้เชี่ยวชาญ', 'rank.5': 'ปรมาจารย์', 'rank.6': 'ตำนานแห่งฮานอย',
+      'sm.rank': function (p) { return p.icon + ' ยศ ' + p.name; },
+      'sm.next': function (p) { return 'อีก ' + p.need + ' ดาว จะเลื่อนเป็น ' + p.icon + ' ' + p.name + ' (ต้องมี ' + p.at + ' ดาว)'; },
+      'sm.max': 'ถึงยศสูงสุดแล้ว 🎉',
+      'sm.hintInfo': function (p) { return '💡 แต้มใบ้สะสม: ' + p.bal + ' (เริ่มต้น ' + p.start + ' + ดาวสะสมทุก 1 ดวง = 1 แต้ม) · แต่ละรอบของด่านใช้ใบ้ได้สูงสุด ' + p.per + ' ครั้ง · ทุกครั้งที่เริ่มรอบใหม่หลังจากเล่นไปแล้ว (เริ่มใหม่/ลองใหม่) จะได้โควตาใบ้ใหม่ แต่ถูกหักจากแต้มใบ้สะสมครั้งละ ' + p.per + ' แต้ม · ใบ้แต่ละครั้งหักดาวของรอบนั้น 1 ดวง (ขั้นต่ำ 1★) แต่ยศและดาวสะสมที่ได้แล้วไม่ลดลง'; },
+      'sm.rules': '<span class="on">★★★★★</span> ย้ายเท่าขั้นต่ำ · <span class="on">★★★★</span> ไม่เกิน ×1.25 · <span class="on">★★★</span> ไม่เกิน ×1.5 · <span class="on">★★</span> ไม่เกิน ×2 · <span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว) · ใช้ใบ้ครั้งละ −1 ดาวของรอบนั้น (ขั้นต่ำ 1★)',
+      'sm.rowh': 'แผ่น →', 'sm.total': 'รวม',
+      'peg.label': function (p) { return 'เสา ' + p.peg; }, 'peg.start': 'จุดเริ่มต้น', 'peg.goal': '🎯 เป้าหมาย',
+      'col.aria': function (p) { return 'เสา ' + p.peg + ' มี ' + p.cnt + ' แผ่น' + (p.goal ? ' (เสาเป้าหมาย)' : ''); },
+      'ui.stage': function (p) { return p.lv + ' ' + p.n + ' แผ่น'; },
+      'ui.bestTip': function (p) { return 'สถิติดีที่สุดของ ' + p.n + ' แผ่น โหมด ' + p.lv + ': ย้าย ' + p.b + ' ครั้ง' + (p.ts ? ' ใช้เวลา ' + p.ts : ''); },
+      'ui.limA': function (p) { return ' · จำกัด ' + p.lim; },
+      'ui.limB': ' (นับเมื่อหยิบแผ่นแรก)',
+      'ui.limC': ' · ย้ายผิด = ตกทันที (ไม่นับปลดล็อกเฉลย)',
+      'ui.limD': function (p) { return ' · หมดเวลาในด่านนี้ ' + p.f + '/' + p.max; },
+      'ui.noUndo': 'โหมดผึ้งพิเศษไม่มีย้อนกลับ',
+      'ui.locked': function (p) { return '🔒 เฉลย ' + p.f + '/' + p.max; },
+      'ui.lockedTip': function (p) { return 'ต้องหมดเวลาในด่านนี้' + (p.strict ? ' (ย้ายผิดไม่นับ)' : '') + ' (' + p.stage + ') ครบ ' + p.max + ' ครั้งจึงจะปลดล็อกเฉลย'; },
+      'ui.hintTip': function (p) { return 'บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H) · เหลือ ' + p.left + '/' + p.per + ' ครั้งในรอบนี้ · แต้มใบ้สะสม ' + p.bal + ' · ใช้แล้วดาวรอบนี้ลด 1 ดวง'; },
+      'ui.resetTip': function (p) { return 'เริ่มรอบใหม่ · รับโควตาใบ้ใหม่ แต่หักแต้มใบ้สะสม ' + p.rc + ' (เหลือ ' + p.bal + ')'; },
+      'ui.resetTip0': 'เริ่มใหม่ (รอบนี้ยังไม่เริ่ม จึงไม่หักแต้มใบ้)',
+      'st.idle': 'แตะเสาเพื่อหยิบแผ่น · เวลาเริ่มนับเมื่อหยิบแผ่นแรก',
+      'st.idleStrict': '🐝 โหมดผึ้งพิเศษ: ย้ายผิดจากทางที่ดีที่สุดแม้ครั้งเดียว = ตกทันที · เวลาเริ่มนับเมื่อหยิบแผ่นแรก',
+      'st.restart': function (p) { return '🔄 เริ่มใหม่ · หักแต้มใบ้สะสม ' + p.charged + ' · ใบ้รอบนี้ ' + p.left + ' ครั้ง · แต้มใบ้สะสมคงเหลือ ' + p.bal; },
+      'st.noDisk': function (p) { return 'เสา ' + p.peg + ' ไม่มีแผ่น เลือกเสาที่มีแผ่นก่อน'; },
+      'st.picked': function (p) { return 'หยิบแผ่นหมายเลข ' + p.d + ' จากเสา ' + p.peg + ' แล้ว แตะเสาปลายทางเพื่อวาง'; },
+      'st.putBack': 'วางแผ่นกลับที่เดิมแล้ว',
+      'st.tooBig': 'วางแผ่นใหญ่ทับแผ่นเล็กไม่ได้ เลือกเสาอื่น',
+      'st.moved': function (p) { return 'ย้ายจากเสา ' + p.from + ' ไปเสา ' + p.to + ' แล้ว'; },
+      'st.hintNoBal': 'แต้มใบ้สะสมหมดแล้ว จึงไม่มีใบ้ให้ใช้ (สะสมดาวเพิ่มเพื่อได้แต้มใบ้)',
+      'st.hintNoLeft': function (p) { return 'ใช้ใบ้ครบ ' + p.per + ' ครั้งในรอบนี้แล้ว · กด "เริ่มใหม่" เพื่อรับใบ้อีก ' + p.n + ' ครั้ง (หักแต้มใบ้สะสม ' + p.n + ')'; },
+      'st.hint': function (p) { return '💡 ใบ้: ย้ายแผ่นหมายเลข ' + p.d + ' จากเสา ' + p.from + ' ไปเสา ' + p.to + ' · ใบ้เหลือ ' + p.left + '/' + p.per + ' ครั้งในรอบนี้ (ดาวรอบนี้ลด ' + p.used + ' ดวง)'; },
+      'st.undo': 'ย้อนกลับ 1 ครั้งแล้ว (นับเป็นการขยับ 1 ครั้ง)',
+      'st.solving': function (p) { return 'กำลังเฉลย ' + p.n + ' แผ่น ต้องย้าย ' + p.m + ' ครั้ง'; },
+      'st.solveStopped': 'หยุดเฉลยแล้ว แตะ "เริ่มใหม่" เพื่อเล่นเอง',
+      'st.resetDone': 'รีเซ็ตสถิติทั้งหมดแล้ว',
+      'st.musicOn': '🎵 เปิดดนตรีผ่อนคลายแล้ว', 'st.musicOff': '🔇 ปิดดนตรีผ่อนคลายแล้ว',
+      'snd.on': 'ดนตรีผ่อนคลาย: เปิดอยู่ (กดเพื่อปิด)', 'snd.off': 'ดนตรีผ่อนคลาย: ปิดอยู่ (กดเพื่อเปิด)', 'snd.keyM': ' · กด M',
+      'hdr.rankAria': function (p) { return 'ยศ ' + p.r + ' ดาวสะสม ' + p.t; },
+      'win.autoTitle': 'เฉลยเสร็จแล้ว',
+      'win.autoDetail': function (p) { return 'ใช้ ' + p.moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดสำหรับ ' + p.n + ' แผ่น'; },
+      'win.perfect': '🏆 สมบูรณ์แบบ!', 'win.ok': '🎉 สำเร็จแล้ว!',
+      'win.d1': function (p) { return 'ย้ายครบใน ' + p.moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดที่เป็นไปได้'; },
+      'win.d2': function (p) { return 'ใช้ ' + p.moves + ' ครั้ง (น้อยที่สุดที่เป็นไปได้คือ ' + p.min + ' ครั้ง)'; },
+      'win.time': function (p) { return ' · ใช้เวลา ' + p.el + ' จาก ' + p.lim + ' (' + p.lv + ')'; },
+      'win.record': function (p) { return ' · สถิติใหม่ของ ' + p.n + ' แผ่น โหมด ' + p.lv + (p.fewer ? '' : ' (ย้ายเท่าเดิมแต่เร็วขึ้น)'); },
+      'bn.rankUp': function (p) { return '🎖️ เลื่อนยศเป็น ' + p.icon + ' ' + p.name + '!'; },
+      'bn.starsAria': function (p) { return p.s + ' ดาวจาก 5'; },
+      'bn.got': function (p) { return 'ได้ ' + p.s + ' ดาว'; },
+      'bn.gain': function (p) { return ' · เพิ่มดาวสะสม +' + p.g; },
+      'bn.nogain': function (p) { return ' · ไม่เพิ่มดาวสะสม (ด่านนี้เคยได้ ' + p.prev + ' ดาวแล้ว)'; },
+      'bn.total': function (p) { return ' · รวม ' + p.t + '/' + p.m + ' ดาว'; },
+      'bn.hints': function (p) { return ' · ใช้ใบ้ ' + p.h + ' ครั้ง' + (p.base > p.s ? ' (ดาวลดจาก ' + p.base + ' เหลือ ' + p.s + ')' : '') + ' · เล่นใหม่โดยไม่ใช้ใบ้เพื่อดาวเต็ม'; },
+      'bn.next': function (p) { return ' · ได้ ' + (p.s + 1) + ' ดาวต้องย้ายไม่เกิน ' + p.max + ' ครั้ง'; },
+      'bn.again': 'เล่นอีกครั้ง', 'bn.tryOwn': 'ลองเล่นเอง', 'bn.retry': 'ลองใหม่',
+      'bn.harder': function (p) { return 'ท้าทายต่อ ' + p.n + ' แผ่น'; },
+      'bn.harder0': 'เพิ่มความท้าทาย',
+      'fail.wrongTitle': '❌ ย้ายผิดมาตรฐาน!', 'fail.timeTitle': '⏰ หมดเวลา!',
+      'fail.wrong': function (p) { return 'โหมด ' + p.lv + ' ต้องย้ายตามทางที่ดีที่สุดเท่านั้น · คุณย้ายแผ่นหมายเลข ' + p.d + ' จากเสา ' + p.from + ' ไปเสา ' + p.to + (p.ex ? ' แต่ท่าที่ถูกคือแผ่นหมายเลข ' + p.exd + ' จากเสา ' + p.exf + ' ไปเสา ' + p.ext : '') + ' · ย้ายถูกมาแล้ว ' + p.moves + ' จาก ' + p.min + ' ครั้ง · '; },
+      'fail.wrongNote': function (p) { return 'การย้ายผิดไม่นับเป็นการปลดล็อกเฉลย' + (p.unlocked ? ' (ด่านนี้ปลดล็อกเฉลยแล้วจากการหมดเวลา)' : ' · เฉลยปลดล็อกได้จากการหมดเวลาในด่านนี้ ' + p.fails + '/' + p.max + ' ครั้งเท่านั้น'); },
+      'fail.time': function (p) { return 'โหมด ' + p.lv + ' กำหนด ' + p.lim + ' · ย้ายไปได้ ' + p.moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + p.min + ' ครั้ง) · ' + (p.unlocked ? 'ล้มเหลวในด่านนี้ครบ ' + p.max + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว' : 'ล้มเหลวในด่านนี้ ' + p.fails + '/' + p.max + ' ครั้ง อีก ' + (p.max - p.fails) + ' ครั้งจะปลดล็อกเฉลย'); }
+    },
+    en: {
+      'doc.title': 'Tower of Hanoi',
+      'aria.exitFs': 'Exit full screen', 'title.exitFs': 'Exit full screen (Esc)',
+      'aria.settings': 'Language and sound',
+      'title.lang': 'Switch to Thai (ภาษาไทย)',
+      'aria.music': 'Relaxing music', 'title.music': 'Relaxing music (press M)',
+      'aria.sfx': 'Sound effects',
+      'title.starTotal': 'Rank and star summary',
+      'hdr.intro': 'Move all the disks from peg A to peg C, one disk at a time, and never place a larger disk on a smaller one.',
+      'aria.controls': 'Game settings',
+      'ctl.disksL': 'Disks', 'ctl.disksS': 'Disks',
+      'aria.minus': 'Fewer disks', 'aria.plus': 'More disks',
+      'aria.levels': 'Speed mode (time limit)', 'ctl.speed': 'Speed',
+      'lv.veryeasy': 'Turtle', 'lv.easy': 'Rabbit', 'lv.normal': 'Cheetah', 'lv.advanced': 'Falcon', 'lv.perfect': 'Special Bee',
+      'aria.perfect': 'Special Bee (one wrong move = fail)', 'title.perfect': 'Special Bee: a single move off the optimal path fails the round instantly',
+      'btn.undo': 'Undo', 'btn.reset': 'Restart', 'btn.hint': 'Hint',
+      'title.hint0': 'Show the next best move (press H)',
+      'btn.solve': 'Show solution', 'btn.stopSolve': 'Stop solution',
+      'aria.speed': 'Solution speed',
+      'sp.slow': '⏱ Slow', 'sp.normal': '⏱ Normal', 'sp.fast': '⏱ Fast', 'sp.vfast': '⏱ Very fast',
+      'aria.stats': 'Stats',
+      'stat.movesL': 'Moves made', 'stat.movesS': 'Moves',
+      'stat.minL': 'Minimum possible', 'stat.minS': 'Min',
+      'stat.timeL': 'Time left', 'stat.timeS': 'Time',
+      'stat.bestL': 'Best record', 'stat.bestS': 'Best',
+      'start.play': 'Start', 'start.cont': 'Continue',
+      'help.h2': '📖 How to play',
+      'help.goal': '<b>Goal:</b> Move all the disks from peg A to peg C',
+      'help.rules': '<b>Rules:</b> Move one disk at a time, and never place a larger disk on a smaller one',
+      'help.how': '<b>How to move:</b> Tap a peg to pick up its top disk, then tap the destination peg to drop it',
+      'help.time': '<b>Time:</b> The countdown starts when you pick up your first disk',
+      'help.bee': '<b>🐝 Special Bee:</b> A special mode where you must follow the optimal path (2ⁿ−1 moves) exactly. A single wrong move fails the round instantly, and there is no undo',
+      'help.h3stars': '⭐ Stars and ranks',
+      'help.earn': '<b>Earning stars:</b> The fewer moves you use to clear a stage, the more stars you get, up to 5 per stage',
+      'help.menu': '<b>Star menu:</b> Tap the <b>★ Stars</b> button at the top right (the rank icon is next to it) to see your current rank, total stars, the star table for each stage, and the reset-stats button',
+      'help.h3hints': '💡 Hints and solution',
+      'help.hint': '<b>Hints:</b> Up to 3 per round. Starting a new round gives you fresh hints, but costs 3 hint points',
+      'help.solution': '<b>Solution:</b> Unlocks after you run out of time 3 times on that stage (in 🐝 Special Bee mode, wrong moves don’t count). Counted separately for each speed mode and number of disks. Once unlocked, it stays unlocked',
+      'help.kbd': '<b>⌨️ Shortcuts:</b> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> select peg · <kbd>Z</kbd> undo · <kbd>H</kbd> hint · <kbd>R</kbd> restart · <kbd>M</kbd> music on/off',
+      'sm.title': '★ Ranks and stars',
+      'sm.sum': 'Total <b id="smTotal">0</b> / <span id="smMax">0</span> stars · the best stars of each stage count (speed mode + number of disks)',
+      'sm.note': 'Reset stats = clears total stars, rank, best records, every stage’s unlocked solution, and restores the hint quota to its starting value, then returns you to the first stage (2 disks). Your selected speed mode stays the same.',
+      'sm.reset': 'Reset all stats', 'sm.confirm': 'Press again to confirm reset', 'sm.close': 'Close',
+      'rank.0': 'Rookie', 'rank.1': 'Apprentice', 'rank.2': 'Disk Mover', 'rank.3': 'Craftsman', 'rank.4': 'Expert', 'rank.5': 'Grandmaster', 'rank.6': 'Legend of Hanoi',
+      'sm.rank': function (p) { return p.icon + ' Rank: ' + p.name; },
+      'sm.next': function (p) { return p.need + ' more ' + (p.need === 1 ? 'star' : 'stars') + ' to reach ' + p.icon + ' ' + p.name + ' (' + p.at + ' stars needed)'; },
+      'sm.max': 'Highest rank reached 🎉',
+      'sm.hintInfo': function (p) { return '💡 Hint points: ' + p.bal + ' (start with ' + p.start + ' + 1 point per star earned) · up to ' + p.per + ' hints per round of a stage · each time you start a new round after playing (Restart / Retry) you get a fresh hint quota, but ' + p.per + ' hint points are deducted · each hint costs 1 star for that round (minimum 1★), but ranks and stars you have already earned never decrease'; },
+      'sm.rules': '<span class="on">★★★★★</span> minimum moves · <span class="on">★★★★</span> within ×1.25 · <span class="on">★★★</span> within ×1.5 · <span class="on">★★</span> within ×2 · <span class="on">★</span> stage cleared (undo counts as 1 move · the solution earns no stars) · each hint costs −1 star for that round (minimum 1★)',
+      'sm.rowh': 'Disks →', 'sm.total': 'Total',
+      'peg.label': function (p) { return 'Peg ' + p.peg; }, 'peg.start': 'Start', 'peg.goal': '🎯 Goal',
+      'col.aria': function (p) { return 'Peg ' + p.peg + ', ' + p.cnt + (p.cnt === 1 ? ' disk' : ' disks') + (p.goal ? ' (goal peg)' : ''); },
+      'ui.stage': function (p) { return p.lv + ' · ' + p.n + ' disks'; },
+      'ui.bestTip': function (p) { return 'Best record for ' + p.n + ' disks, ' + p.lv + ' mode: ' + p.b + ' moves' + (p.ts ? ' in ' + p.ts : ''); },
+      'ui.limA': function (p) { return ' · limit ' + p.lim; },
+      'ui.limB': ' (starts on first pick)',
+      'ui.limC': ' · wrong move = instant fail (doesn’t count toward unlocking)',
+      'ui.limD': function (p) { return ' · timeouts on this stage ' + p.f + '/' + p.max; },
+      'ui.noUndo': 'Special Bee mode has no undo',
+      'ui.locked': function (p) { return '🔒 Solution ' + p.f + '/' + p.max; },
+      'ui.lockedTip': function (p) { return 'Run out of time on this stage (' + p.stage + ') ' + p.max + ' times to unlock the solution' + (p.strict ? ' (wrong moves don’t count)' : ''); },
+      'ui.hintTip': function (p) { return 'Show the next best move (press H) · ' + p.left + '/' + p.per + ' left this round · hint points ' + p.bal + ' · each hint costs 1 star this round'; },
+      'ui.resetTip': function (p) { return 'Start a new round · get a fresh hint quota, but ' + p.rc + ' hint points are deducted (' + p.bal + ' left)'; },
+      'ui.resetTip0': 'Restart (this round hasn’t started, so no hint points are deducted)',
+      'st.idle': 'Tap a peg to pick up a disk · the timer starts on your first pick',
+      'st.idleStrict': '🐝 Special Bee mode: one move off the optimal path = instant fail · the timer starts on your first pick',
+      'st.restart': function (p) { return '🔄 Restarted · ' + p.charged + ' hint points deducted · ' + p.left + ' hints this round · ' + p.bal + ' hint points left'; },
+      'st.noDisk': function (p) { return 'Peg ' + p.peg + ' has no disks. Pick a peg that has one first'; },
+      'st.picked': function (p) { return 'Picked up disk ' + p.d + ' from peg ' + p.peg + '. Tap the destination peg to drop it'; },
+      'st.putBack': 'Disk put back where it was',
+      'st.tooBig': 'You can’t place a larger disk on a smaller one. Choose another peg',
+      'st.moved': function (p) { return 'Moved from peg ' + p.from + ' to peg ' + p.to; },
+      'st.hintNoBal': 'You’re out of hint points, so no hints are available (earn more stars to get hint points)',
+      'st.hintNoLeft': function (p) { return 'You’ve used all ' + p.per + ' hints this round · press "Restart" to get ' + p.n + ' more (deducts ' + p.n + ' hint points)'; },
+      'st.hint': function (p) { return '💡 Hint: move disk ' + p.d + ' from peg ' + p.from + ' to peg ' + p.to + ' · ' + p.left + '/' + p.per + ' hints left this round (stars lowered by ' + p.used + ' this round)'; },
+      'st.undo': 'Undid 1 move (counts as 1 move)',
+      'st.solving': function (p) { return 'Solving ' + p.n + ' disks · ' + p.m + ' moves needed'; },
+      'st.solveStopped': 'Solution stopped. Tap "Restart" to play it yourself',
+      'st.resetDone': 'All stats have been reset',
+      'st.musicOn': '🎵 Relaxing music on', 'st.musicOff': '🔇 Relaxing music off',
+      'snd.on': 'Relaxing music: on (press to turn off)', 'snd.off': 'Relaxing music: off (press to turn on)', 'snd.keyM': ' · press M',
+      'hdr.rankAria': function (p) { return 'Rank ' + p.r + ', total stars ' + p.t; },
+      'win.autoTitle': 'Solution complete',
+      'win.autoDetail': function (p) { return 'Took ' + p.moves + ' moves, the minimum for ' + p.n + ' disks'; },
+      'win.perfect': '🏆 Perfect!', 'win.ok': '🎉 Cleared!',
+      'win.d1': function (p) { return 'Finished in ' + p.moves + ' moves, the minimum possible'; },
+      'win.d2': function (p) { return 'Took ' + p.moves + ' moves (the minimum possible is ' + p.min + ')'; },
+      'win.time': function (p) { return ' · time ' + p.el + ' of ' + p.lim + ' (' + p.lv + ')'; },
+      'win.record': function (p) { return ' · new record for ' + p.n + ' disks, ' + p.lv + ' mode' + (p.fewer ? '' : ' (same moves but faster)'); },
+      'bn.rankUp': function (p) { return '🎖️ Promoted to ' + p.icon + ' ' + p.name + '!'; },
+      'bn.starsAria': function (p) { return p.s + ' out of 5 stars'; },
+      'bn.got': function (p) { return 'Earned ' + p.s + (p.s === 1 ? ' star' : ' stars'); },
+      'bn.gain': function (p) { return ' · total stars +' + p.g; },
+      'bn.nogain': function (p) { return ' · no new total stars (you already earned ' + p.prev + (p.prev === 1 ? ' star' : ' stars') + ' on this stage)'; },
+      'bn.total': function (p) { return ' · total ' + p.t + '/' + p.m + ' stars'; },
+      'bn.hints': function (p) { return ' · used ' + p.h + (p.h === 1 ? ' hint' : ' hints') + (p.base > p.s ? ' (stars lowered from ' + p.base + ' to ' + p.s + ')' : '') + ' · replay without hints for full stars'; },
+      'bn.next': function (p) { return ' · ' + (p.s + 1) + ' stars needs ' + p.max + ' moves or fewer'; },
+      'bn.again': 'Play again', 'bn.tryOwn': 'Try it yourself', 'bn.retry': 'Retry',
+      'bn.harder': function (p) { return 'Next: ' + p.n + ' disks'; },
+      'bn.harder0': 'Harder',
+      'fail.wrongTitle': '❌ Off the optimal path!', 'fail.timeTitle': '⏰ Time’s up!',
+      'fail.wrong': function (p) { return p.lv + ' mode requires following the optimal path · you moved disk ' + p.d + ' from peg ' + p.from + ' to peg ' + p.to + (p.ex ? ', but the correct move was disk ' + p.exd + ' from peg ' + p.exf + ' to peg ' + p.ext : '') + ' · ' + p.moves + ' of ' + p.min + ' moves were correct · '; },
+      'fail.wrongNote': function (p) { return 'A wrong move doesn’t count toward unlocking the solution' + (p.unlocked ? ' (this stage’s solution is already unlocked from timeouts)' : ' · the solution unlocks only by running out of time on this stage (' + p.fails + '/' + p.max + ')'); },
+      'fail.time': function (p) { return p.lv + ' mode limit ' + p.lim + ' · made ' + p.moves + ' moves (at least ' + p.min + ' needed) · ' + (p.unlocked ? 'failed this stage ' + p.max + ' times, so the solution is unlocked' : 'failed this stage ' + p.fails + '/' + p.max + ' times · ' + (p.max - p.fails) + ' more to unlock the solution'); }
+    }
+  };
+  function t(key, p) {
+    var d = I18N[LANG], s = d[key];
+    if (s === undefined) s = I18N.th[key];
+    return typeof s === 'function' ? s(p || {}) : s;
+  }
+  var I18N_t = t;   // ชื่อสำรอง: บางฟังก์ชันมีตัวแปรในเครื่องชื่อ t บังฟังก์ชันแปลภาษา
 
   var $ = function (s) { return document.querySelector(s); };
   var stage = $('#stage'), statusEl = $('#status'), banner = $('#banner');
@@ -814,6 +1037,7 @@
     perfect:  { icon: '🐝', name: '🐝 ผึ้งพิเศษ', per: 3.6, base: 30, strict: true }
   };
   var UNLOCK_FAILS = 3;
+  var lastWrong = null;   // รายละเอียดการย้ายผิดครั้งล่าสุด (ใช้สร้างข้อความหน้าตกรอบใหม่ตอนเปลี่ยนภาษา)
   var failReason = '';   // '' | 'time' | 'wrong' (สาเหตุที่ตกรอบนี้)
   function strictMode() { return !!LEVELS[level].strict; }
   var level = 'easy', over = false;
@@ -914,7 +1138,8 @@
     return step(n, 2);
   }
   function curFails() { return Math.min(failsMap[starKey(level, n)] || 0, 99); }
-  function stageName() { return LEVELS[level].name + ' ' + n + ' แผ่น'; }
+  function stageName() { return t('ui.stage', { lv: LEVELS[level].name, n: n }); }
+  function idleStatus() { return strictMode() ? t('st.idleStrict') : t('st.idle'); }
   function totalStars() {
     var sum = 0;
     for (var lv in LEVELS) for (var k = MIN_N; k <= MAX_N; k++) sum += stars[starKey(lv, k)] || 0;
@@ -1107,8 +1332,8 @@
     won = false; over = false; failReason = ''; selected = null; lastDrop = null; shakePeg = null;
     resetCelebration();
     setStatus(charged > 0
-      ? '🔄 เริ่มใหม่ · หักแต้มใบ้สะสม ' + charged + ' · ใบ้รอบนี้ ' + hintsLeft + ' ครั้ง · แต้มใบ้สะสมคงเหลือ ' + hintBalance()
-      : (strictMode() ? '🐝 โหมดผึ้งพิเศษ: ย้ายผิดจากทางที่ดีที่สุดแม้ครั้งเดียว = ตกทันที · เวลาเริ่มนับเมื่อหยิบแผ่นแรก' : 'แตะเสาเพื่อหยิบแผ่น · เวลาเริ่มนับเมื่อหยิบแผ่นแรก'));
+      ? t('st.restart', { charged: charged, left: hintsLeft, bal: hintBalance() })
+      : idleStatus());
     if (autoInit) stage.style.visibility = 'hidden';   // ซ่อนกระดานเก่าไว้ชั่วครู่ ไม่ให้เห็นภาพกะพริบก่อนวาดใหม่
     else render();
   }
@@ -1364,13 +1589,13 @@
   function syncAudioUI() {
     var on = Snd.music(), mb = $('#musicBtn');
     mb.setAttribute('aria-pressed', String(on));
-    var lbl = on ? 'ดนตรีผ่อนคลาย: เปิดอยู่ (กดเพื่อปิด)' : 'ดนตรีผ่อนคลาย: ปิดอยู่ (กดเพื่อเปิด)';
-    mb.setAttribute('aria-label', lbl); mb.title = lbl + ' · กด M';
+    var lbl = on ? t('snd.on') : t('snd.off');
+    mb.setAttribute('aria-label', lbl); mb.title = lbl + t('snd.keyM');
     $('#sfxBtn').setAttribute('aria-pressed', String(Snd.sfx()));
   }
   function changeMusic() {
     Snd.toggleMusic(); syncAudioUI();
-    setStatus(Snd.music() ? '🎵 เปิดดนตรีผ่อนคลายแล้ว' : '🔇 ปิดดนตรีผ่อนคลายแล้ว');
+    setStatus(Snd.music() ? t('st.musicOn') : t('st.musicOff'));
   }
 
   function doMove(from, to, auto) {
@@ -1390,10 +1615,9 @@
   function finish(auto) {
     won = true;
     if (started) elapsed = nowMs() - startTime;
-    var min = minMoves(), title, detail, perfect = false, starInfo = null;
+    var min = minMoves(), mk, perfect = false, starInfo = null;
     if (auto) {
-      title = 'เฉลยเสร็จแล้ว';
-      detail = 'ใช้ ' + moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดสำหรับ ' + n + ' แผ่น';
+      mk = function () { return { title: t('win.autoTitle'), detail: t('win.autoDetail', { moves: moves, n: n }) }; };
     } else {
       var bk = starKey(level, n);                       // สถิติแยกตามโหมดความเร็ว + จำนวนแผ่น
       var best = getBest(bk), bestT = getBestTime(bk);
@@ -1402,12 +1626,13 @@
       var newRecord = fewer || faster;
       if (newRecord) { setBest(bk, moves); setBestTime(bk, elapsed); }
       perfect = moves === min && hintsUsed === 0;
-      title = perfect ? '🏆 สมบูรณ์แบบ!' : '🎉 สำเร็จแล้ว!';
-      detail = moves === min
-        ? 'ย้ายครบใน ' + moves + ' ครั้ง ซึ่งเป็นจำนวนน้อยที่สุดที่เป็นไปได้'
-        : 'ใช้ ' + moves + ' ครั้ง (น้อยที่สุดที่เป็นไปได้คือ ' + min + ' ครั้ง)';
-      detail += ' · ใช้เวลา ' + fmtTime(elapsed) + ' จาก ' + fmtTime(limitMs()) + ' (' + LEVELS[level].name + ')';
-      if (newRecord) detail += ' · สถิติใหม่ของ ' + n + ' แผ่น โหมด ' + LEVELS[level].name + (fewer ? '' : ' (ย้ายเท่าเดิมแต่เร็วขึ้น)');
+      var elapsedF = elapsed;
+      mk = function () {                                // สร้างข้อความตอนแสดง (เปลี่ยนภาษากลางหน้าสรุปได้)
+        var detail = moves === min ? t('win.d1', { moves: moves }) : t('win.d2', { moves: moves, min: min });
+        detail += t('win.time', { el: fmtTime(elapsedF), lim: fmtTime(limitMs()), lv: LEVELS[level].name });
+        if (newRecord) detail += t('win.record', { n: n, lv: LEVELS[level].name, fewer: fewer });
+        return { title: perfect ? t('win.perfect') : t('win.ok'), detail: detail };
+      };
       // ดาวของด่านนี้ (โหมดความเร็ว + จำนวนแผ่น): เก็บค่าที่ดีที่สุด
       var totalBefore = totalStars();
       var base = starsFor(moves, min), sv = Math.max(1, base - hintsUsed);   // ใบ้ 1 ครั้ง หัก 1 ดาว (ขั้นต่ำ 1)
@@ -1418,7 +1643,7 @@
         rankUp: rankIndex(totalStars()) > rankIndex(totalBefore) ? RANKS[rankIndex(totalStars())] : null };
     }
     // เก็บผลไว้ก่อน แล้วค่อยแสดงหลังจากแผ่นสุดท้ายวางเสร็จ (ดู render)
-    winInfo = { title: title, detail: detail, auto: !!auto, perfect: perfect, star: starInfo };
+    winInfo = { mk: mk, auto: !!auto, perfect: perfect, star: starInfo };
     winPending = true;
     setStatus('');
   }
@@ -1439,12 +1664,7 @@
     var wl = info.auto ? 0.8 : info.perfect ? 2.8 : 1.8;                     // ความยาวเสียงฉลอง (วินาที)
     if (info.star && info.star.rankUp) Snd.play('rank', wl);
     Snd.duck(wl + (info.star && info.star.rankUp ? 1.2 : 0.4));
-    $('#bnTitle').textContent = info.title;
-    $('#bnDetail').textContent = info.detail;
-    showStarBanner(info.star);
-    $('#again').textContent = info.auto ? 'ลองเล่นเอง' : 'เล่นอีกครั้ง';
-    $('#harder').hidden = info.auto || n >= MAX_N;
-    $('#harder').textContent = 'ท้าทายต่อ ' + (n + 1) + ' แผ่น';
+    fillWinBanner(info);
     $('#showSolve').hidden = true;
     banner.classList.remove('fail');
     banner.hidden = false;
@@ -1465,26 +1685,52 @@
     if (!info.auto && !reducedMotion()) launchConfetti();
   }
 
+  function fillWinBanner(info) {
+    var tx = info.mk();
+    $('#bnTitle').textContent = tx.title;
+    $('#bnDetail').textContent = tx.detail;
+    showStarBanner(info.star);
+    $('#again').textContent = info.auto ? t('bn.tryOwn') : t('bn.again');
+    $('#harder').hidden = info.auto || n >= MAX_N;
+    $('#harder').textContent = t('bn.harder', { n: n + 1 });
+  }
+  function fillFailBanner() {
+    var wrong = lastWrong, fails = curFails(), unlocked = fails >= UNLOCK_FAILS, min = minMoves();
+    var lvName = LEVELS[level].name, txt;
+    $('#bnTitle').textContent = wrong ? t('fail.wrongTitle') : t('fail.timeTitle');
+    if (wrong) {
+      var ex = wrong.exp;
+      txt = t('fail.wrong', { lv: lvName, d: wrong.disk, from: NAMES[wrong.from], to: NAMES[wrong.to], ex: !!ex,
+          exd: wrong.expDisk, exf: ex ? NAMES[ex[0]] : '', ext: ex ? NAMES[ex[1]] : '', moves: moves, min: min }) +
+        t('fail.wrongNote', { unlocked: unlocked, fails: fails, max: UNLOCK_FAILS });
+    } else {
+      txt = t('fail.time', { lv: lvName, lim: fmtTime(limitMs()), moves: moves, min: min, unlocked: unlocked, fails: fails, max: UNLOCK_FAILS });
+    }
+    $('#bnDetail').textContent = txt;
+    $('#again').textContent = t('bn.retry');
+    $('#harder').hidden = true;
+    $('#showSolve').hidden = !unlocked;
+  }
   function updateHeader() {
     var t = totalStars(), r = RANKS[rankIndex(t)];
     $('#starTotalN').textContent = t;
     $('#rankName').innerHTML = '<span class="rk-i">' + r.icon + '</span><span class="rk-n"> ' + r.name + '</span>';
-    $('#starTotal').setAttribute('aria-label', 'ยศ ' + r.name + ' ดาวสะสม ' + t);
+    $('#starTotal').setAttribute('aria-label', I18N_t('hdr.rankAria', { r: r.name, t: t }));
   }
   function showStarBanner(si) {
     var st = $('#bnStars'), tt = $('#bnTotal');
     var rk = $('#bnRank');
     if (!si) { st.innerHTML = ''; tt.textContent = ''; rk.textContent = ''; return; }
-    rk.textContent = si.rankUp ? '🎖️ เลื่อนยศเป็น ' + si.rankUp.icon + ' ' + si.rankUp.name + '!' : '';
+    rk.textContent = si.rankUp ? I18N_t('bn.rankUp', { icon: si.rankUp.icon, name: si.rankUp.name }) : '';
     st.innerHTML = starHtml(si.stars);
-    st.setAttribute('aria-label', si.stars + ' ดาวจาก 5');
-    var t = 'ได้ ' + si.stars + ' ดาว';
-    if (si.gained > 0) t += ' · เพิ่มดาวสะสม +' + si.gained;
-    else t += ' · ไม่เพิ่มดาวสะสม (ด่านนี้เคยได้ ' + si.prev + ' ดาวแล้ว)';
-    t += ' · รวม ' + si.total + '/' + maxStars() + ' ดาว';
-    if (si.hints > 0) t += ' · ใช้ใบ้ ' + si.hints + ' ครั้ง' + (si.base > si.stars ? ' (ดาวลดจาก ' + si.base + ' เหลือ ' + si.stars + ')' : '') + ' · เล่นใหม่โดยไม่ใช้ใบ้เพื่อดาวเต็ม';
-    else if (si.stars < 5) t += ' · ได้ ' + (si.stars + 1) + ' ดาวต้องย้ายไม่เกิน ' + si.nextMax + ' ครั้ง';
-    tt.textContent = t;
+    st.setAttribute('aria-label', I18N_t('bn.starsAria', { s: si.stars }));
+    var tx = I18N_t('bn.got', { s: si.stars });
+    if (si.gained > 0) tx += I18N_t('bn.gain', { g: si.gained });
+    else tx += I18N_t('bn.nogain', { prev: si.prev });
+    tx += I18N_t('bn.total', { t: si.total, m: maxStars() });
+    if (si.hints > 0) tx += I18N_t('bn.hints', { h: si.hints, base: si.base, s: si.stars });
+    else if (si.stars < 5) tx += I18N_t('bn.next', { s: si.stars, max: si.nextMax });
+    tt.textContent = tx;
   }
   function showBanner() {
     try { banner.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' }); } catch (e) {}
@@ -1492,6 +1738,7 @@
   function timeUp(wrong) {
     over = true;
     failReason = wrong ? 'wrong' : 'time';
+    lastWrong = wrong || null;
     if (wrong && started) elapsed = nowMs() - startTime;   // หยุดเวลา ณ ตอนย้ายผิด
     selected = null;
     winToken++;
@@ -1503,23 +1750,8 @@
     var min = minMoves();
     Snd.play('lose'); Snd.duck(1.8);
     render();
-    $('#bnTitle').textContent = wrong ? '❌ ย้ายผิดมาตรฐาน!' : '⏰ หมดเวลา!';
     showStarBanner(null);
-    var wrongTxt = '';
-    if (wrong) {
-      var ex = wrong.exp;
-      wrongTxt = 'โหมด ' + LEVELS[level].name + ' ต้องย้ายตามทางที่ดีที่สุดเท่านั้น · คุณย้ายแผ่นหมายเลข ' + wrong.disk + ' จากเสา ' + NAMES[wrong.from] + ' ไปเสา ' + NAMES[wrong.to] +
-        (ex ? ' แต่ท่าที่ถูกคือแผ่นหมายเลข ' + wrong.expDisk + ' จากเสา ' + NAMES[ex[0]] + ' ไปเสา ' + NAMES[ex[1]] : '') +
-        ' · ย้ายถูกมาแล้ว ' + moves + ' จาก ' + min + ' ครั้ง · ';
-    }
-    $('#bnDetail').textContent = wrong ? wrongTxt + 'การย้ายผิดไม่นับเป็นการปลดล็อกเฉลย' + (unlocked ? ' (ด่านนี้ปลดล็อกเฉลยแล้วจากการหมดเวลา)' : ' · เฉลยปลดล็อกได้จากการหมดเวลาในด่านนี้ ' + fails + '/' + UNLOCK_FAILS + ' ครั้งเท่านั้น') :
-      'โหมด ' + LEVELS[level].name + ' กำหนด ' + fmtTime(limitMs()) + ' · ย้ายไปได้ ' + moves + ' ครั้ง (ต้องใช้อย่างน้อย ' + min + ' ครั้ง) · ' +
-      (unlocked
-        ? 'ล้มเหลวในด่านนี้ครบ ' + UNLOCK_FAILS + ' ครั้งแล้ว ปลดล็อกเฉลยแล้ว'
-        : 'ล้มเหลวในด่านนี้ ' + fails + '/' + UNLOCK_FAILS + ' ครั้ง อีก ' + (UNLOCK_FAILS - fails) + ' ครั้งจะปลดล็อกเฉลย');
-    $('#again').textContent = 'ลองใหม่';
-    $('#harder').hidden = true;
-    $('#showSolve').hidden = !unlocked;
+    fillFailBanner();
     banner.classList.add('fail');
     banner.hidden = false;
     showBanner();
@@ -1610,24 +1842,24 @@
     if (solving || won || over) return;
     if (i === 0) startClock();            // เริ่มนับเวลาเมื่อคลิกเสา A ครั้งแรก
     if (selected === null) {
-      if (!pegs[i].length) { Snd.play('bad'); setStatus('เสา ' + NAMES[i] + ' ไม่มีแผ่น เลือกเสาที่มีแผ่นก่อน', true); return; }
+      if (!pegs[i].length) { Snd.play('bad'); setStatus(t('st.noDisk', { peg: NAMES[i] }), true); return; }
       selected = i;
       Snd.play('pick');
-      setStatus('หยิบแผ่นหมายเลข ' + pegs[i][pegs[i].length - 1] + ' จากเสา ' + NAMES[i] + ' แล้ว แตะเสาปลายทางเพื่อวาง');
+      setStatus(t('st.picked', { d: pegs[i][pegs[i].length - 1], peg: NAMES[i] }));
       render();
       return;
     }
     if (selected === i) {
       selected = null;
       Snd.play('cancel');
-      setStatus('วางแผ่นกลับที่เดิมแล้ว');
+      setStatus(t('st.putBack'));
       render();
       return;
     }
     if (!canMove(selected, i)) {
       shakePeg = selected;
       Snd.play('bad');
-      setStatus('วางแผ่นใหญ่ทับแผ่นเล็กไม่ได้ เลือกเสาอื่น', true);
+      setStatus(t('st.tooBig'), true);
       render();
       return;
     }
@@ -1641,7 +1873,7 @@
       }
     }
     doMove(from, i, false);
-    if (!won) setStatus('ย้ายจากเสา ' + NAMES[from] + ' ไปเสา ' + NAMES[i] + ' แล้ว');
+    if (!won) setStatus(t('st.moved', { from: NAMES[from], to: NAMES[i] }));
     render();
   }
 
@@ -1650,8 +1882,8 @@
     if (!hintMove) {                                   // ใบ้ซ้ำในสถานะเดิมไม่เสียโควตาเพิ่ม
       if (hintsLeft <= 0) {
         setStatus(hintBalance() <= 0
-          ? 'แต้มใบ้สะสมหมดแล้ว จึงไม่มีใบ้ให้ใช้ (สะสมดาวเพิ่มเพื่อได้แต้มใบ้)'
-          : 'ใช้ใบ้ครบ ' + HINT_PER_ROUND + ' ครั้งในรอบนี้แล้ว · กด "เริ่มใหม่" เพื่อรับใบ้อีก ' + Math.min(HINT_PER_ROUND, hintBalance()) + ' ครั้ง (หักแต้มใบ้สะสม ' + Math.min(HINT_PER_ROUND, hintBalance()) + ')', true);
+          ? t('st.hintNoBal')
+          : t('st.hintNoLeft', { per: HINT_PER_ROUND, n: Math.min(HINT_PER_ROUND, hintBalance()) }), true);
         return;
       }
       var mv = nextBestMove();
@@ -1661,8 +1893,7 @@
     }
     Snd.play('hint');
     var top = pegs[hintMove[0]][pegs[hintMove[0]].length - 1];
-    setStatus('💡 ใบ้: ย้ายแผ่นหมายเลข ' + top + ' จากเสา ' + NAMES[hintMove[0]] + ' ไปเสา ' + NAMES[hintMove[1]] +
-      ' · ใบ้เหลือ ' + hintsLeft + '/' + HINT_PER_ROUND + ' ครั้งในรอบนี้ (ดาวรอบนี้ลด ' + hintsUsed + ' ดวง)');
+    setStatus(t('st.hint', { d: top, from: NAMES[hintMove[0]], to: NAMES[hintMove[1]], left: hintsLeft, per: HINT_PER_ROUND, used: hintsUsed }));
     render();
   }
   function undo() {
@@ -1675,7 +1906,7 @@
     moves++;                              // การย้อนกลับนับเป็นการขยับ 1 ครั้งด้วย
     won = false; resetCelebration(); selected = null; lastDrop = null;
     Snd.play('undo');
-    setStatus('ย้อนกลับ 1 ครั้งแล้ว (นับเป็นการขยับ 1 ครั้ง)');
+    setStatus(t('st.undo'));
     render();
   }
 
@@ -1692,7 +1923,7 @@
     solving = true;
     solveList = []; buildSolution(n, 0, 2, 1, solveList);
     solveIdx = 0;
-    setStatus('กำลังเฉลย ' + n + ' แผ่น ต้องย้าย ' + solveList.length + ' ครั้ง');
+    setStatus(t('st.solving', { n: n, m: solveList.length }));
     runSolveTimer();
     render();
   }
@@ -1735,7 +1966,7 @@
       col.dataset.i = i;
       col.tabIndex = 0;
       col.setAttribute('role', 'button');
-      col.setAttribute('aria-label', 'เสา ' + NAMES[i] + ' มี ' + p.length + ' แผ่น' + (i === 2 ? ' (เสาเป้าหมาย)' : ''));
+      col.setAttribute('aria-label', t('col.aria', { peg: NAMES[i], cnt: p.length, goal: i === 2 }));
 
       var peg = document.createElement('div');
       peg.className = 'peg';
@@ -1776,7 +2007,7 @@
 
       var label = document.createElement('div');
       label.className = 'label';
-      label.innerHTML = 'เสา ' + NAMES[i] + '<small>' + (i === 0 ? 'จุดเริ่มต้น' : i === 2 ? '<span class="goal-pill">🎯 เป้าหมาย</span>' : '') + '</small>';
+      label.innerHTML = t('peg.label', { peg: NAMES[i] }) + '<small>' + (i === 0 ? t('peg.start') : i === 2 ? '<span class="goal-pill">' + t('peg.goal') + '</span>' : '') + '</small>';
       col.appendChild(label);
 
       stage.appendChild(col);
@@ -1814,9 +2045,9 @@
     $('#best').textContent = b === null ? '–' : b;
     var bt = getBestTime(bk);
     $('#bestTime').textContent = (b !== null && bt !== null) ? fmtTime(bt) : '';
-    $('#best').parentNode.title = b === null ? '' : 'สถิติดีที่สุดของ ' + n + ' แผ่น โหมด ' + LEVELS[level].name + ': ย้าย ' + b + ' ครั้ง' + (bt !== null ? ' ใช้เวลา ' + fmtTime(bt) : '');
+    $('#best').parentNode.title = b === null ? '' : t('ui.bestTip', { n: n, lv: LEVELS[level].name, b: b, ts: bt !== null ? fmtTime(bt) : '' });
     var L = LEVELS[level];
-    $('#limitNote').innerHTML = L.name + ' · จำกัด ' + fmtTime(limitMs()) + '<span class="ln-extra"> (นับเมื่อหยิบแผ่นแรก)</span>' + (strictMode() ? ' · ย้ายผิด = ตกทันที (ไม่นับปลดล็อกเฉลย)' : '') + ' · หมดเวลาในด่านนี้ ' + Math.min(curFails(), UNLOCK_FAILS) + '/' + UNLOCK_FAILS;
+    $('#limitNote').innerHTML = L.name + t('ui.limA', { lim: fmtTime(limitMs()) }) + '<span class="ln-extra">' + t('ui.limB') + '</span>' + (strictMode() ? t('ui.limC') : '') + t('ui.limD', { f: Math.min(curFails(), UNLOCK_FAILS), max: UNLOCK_FAILS });
     updateTime();
     updateButtons();
   }
@@ -1825,22 +2056,22 @@
     $('#minus').disabled = n <= MIN_N;
     $('#plus').disabled = n >= MAX_N;
     $('#undo').disabled = solving || over || won || !history.length || strictMode();
-    $('#undo').title = strictMode() ? 'โหมดผึ้งพิเศษไม่มีย้อนกลับ' : '';
+    $('#undo').title = strictMode() ? t('ui.noUndo') : '';
     var sb = $('#solve');
     if (solving) {
-      sb.textContent = 'หยุดเฉลย'; sb.disabled = false; sb.removeAttribute('title');
+      sb.textContent = t('btn.stopSolve'); sb.disabled = false; sb.removeAttribute('title');
     } else if (curFails() >= UNLOCK_FAILS) {
-      sb.textContent = 'ดูเฉลย'; sb.disabled = false; sb.removeAttribute('title');
+      sb.textContent = t('btn.solve'); sb.disabled = false; sb.removeAttribute('title');
     } else {
-      sb.textContent = '🔒 เฉลย ' + curFails() + '/' + UNLOCK_FAILS; sb.disabled = true;
-      sb.title = 'ต้องหมดเวลาในด่านนี้' + (strictMode() ? ' (ย้ายผิดไม่นับ)' : '') + ' (' + stageName() + ') ครบ ' + UNLOCK_FAILS + ' ครั้งจึงจะปลดล็อกเฉลย';
+      sb.textContent = t('ui.locked', { f: curFails(), max: UNLOCK_FAILS }); sb.disabled = true;
+      sb.title = t('ui.lockedTip', { strict: strictMode(), stage: stageName(), max: UNLOCK_FAILS });
     }
     var hb = $('#hint'), bal = hintBalance();
     $('#hintN').textContent = hintsLeft;
     hb.disabled = solving || over || won;
-    hb.title = 'บอกใบ้การย้ายที่ดีที่สุดถัดไป (กด H) · เหลือ ' + hintsLeft + '/' + HINT_PER_ROUND + ' ครั้งในรอบนี้ · แต้มใบ้สะสม ' + bal + ' · ใช้แล้วดาวรอบนี้ลด 1 ดวง';
+    hb.title = t('ui.hintTip', { left: hintsLeft, per: HINT_PER_ROUND, bal: bal });
     var rb = $('#reset'), rc = Math.min(HINT_PER_ROUND, bal);
-    rb.title = roundTouched ? 'เริ่มรอบใหม่ · รับโควตาใบ้ใหม่ แต่หักแต้มใบ้สะสม ' + rc + ' (เหลือ ' + bal + ')' : 'เริ่มใหม่ (รอบนี้ยังไม่เริ่ม จึงไม่หักแต้มใบ้)';
+    rb.title = roundTouched ? t('ui.resetTip', { rc: rc, bal: bal }) : t('ui.resetTip0');
     var lvs = document.querySelectorAll('.lv');
     for (var i = 0; i < lvs.length; i++) {
       lvs[i].setAttribute('aria-pressed', lvs[i].dataset.lv === level ? 'true' : 'false');
@@ -1921,7 +2152,7 @@
   var everPlayed = false;                              // เคยกดเริ่มเล่นแล้ว (จำข้ามการเปิดเว็บ) → ปุ่มเป็น "เล่นต่อ"
   try { everPlayed = localStorage.getItem('hanoi-played') === '1'; } catch (e) {}
   function markPlayed() { if (everPlayed) return; everPlayed = true; try { localStorage.setItem('hanoi-played', '1'); } catch (e) {} }
-  function startLabel() { return (everPlayed || totalStars() > 0) ? 'เล่นต่อ' : 'เริ่มเล่น'; }
+  function startLabel() { return (everPlayed || totalStars() > 0) ? t('start.cont') : t('start.play'); }
   function fsActive() { return document.body.classList.contains('fs'); }
   function relayout() {
     fsKey = '';
@@ -2016,7 +2247,7 @@
   $('#undo').addEventListener('click', undo);
   $('#hint').addEventListener('click', useHint);
   $('#solve').addEventListener('click', function () {
-    if (solving) { stopSolve(); setStatus('หยุดเฉลยแล้ว แตะ "เริ่มใหม่" เพื่อเล่นเอง'); render(); }
+    if (solving) { stopSolve(); setStatus(t('st.solveStopped')); render(); }
     else startSolve();
   });
   $('#speed').addEventListener('change', function () { if (solving) runSolveTimer(); });
@@ -2027,24 +2258,19 @@
     var tot = totalStars(), ri = rankIndex(tot), cur = RANKS[ri], nxt = RANKS[ri + 1];
     $('#smTotal').textContent = tot;
     $('#smMax').textContent = maxStars();
-    $('#smRank').textContent = cur.icon + ' ยศ ' + cur.name;
+    $('#smRank').textContent = t('sm.rank', { icon: cur.icon, name: cur.name });
     $('#smRankFill').style.width = (nxt ? Math.round((tot - cur.at) / (nxt.at - cur.at) * 100) : 100) + '%';
     $('#smRankNext').textContent = nxt
-      ? 'อีก ' + (nxt.at - tot) + ' ดาว จะเลื่อนเป็น ' + nxt.icon + ' ' + nxt.name + ' (ต้องมี ' + nxt.at + ' ดาว)'
-      : 'ถึงยศสูงสุดแล้ว 🎉';
+      ? t('sm.next', { need: nxt.at - tot, icon: nxt.icon, name: nxt.name, at: nxt.at })
+      : t('sm.max');
     $('#smLadder').innerHTML = RANKS.map(function (r, i) {
       return '<span class="rank-chip' + (tot >= r.at ? ' got' : '') + (i === ri ? ' now' : '') + '">' + r.icon + ' ' + r.name + ' · ' + r.at + '★</span>';
     }).join('');
-    $('#smHintInfo').textContent = '💡 แต้มใบ้สะสม: ' + hintBalance() + ' (เริ่มต้น ' + HINT_START + ' + ดาวสะสมทุก 1 ดวง = 1 แต้ม) · แต่ละรอบของด่านใช้ใบ้ได้สูงสุด ' + HINT_PER_ROUND + ' ครั้ง · ทุกครั้งที่เริ่มรอบใหม่หลังจากเล่นไปแล้ว (เริ่มใหม่/ลองใหม่) จะได้โควตาใบ้ใหม่ แต่ถูกหักจากแต้มใบ้สะสมครั้งละ ' + HINT_PER_ROUND + ' แต้ม · ใบ้แต่ละครั้งหักดาวของรอบนั้น 1 ดวง (ขั้นต่ำ 1★) แต่ยศและดาวสะสมที่ได้แล้วไม่ลดลง';
-    $('#smRules').innerHTML =
-      '<span class="on">★★★★★</span> ย้ายเท่าขั้นต่ำ · ' +
-      '<span class="on">★★★★</span> ไม่เกิน ×1.25 · ' +
-      '<span class="on">★★★</span> ไม่เกิน ×1.5 · ' +
-      '<span class="on">★★</span> ไม่เกิน ×2 · ' +
-      '<span class="on">★</span> ผ่านด่านได้ (การย้อนกลับนับเป็น 1 ครั้ง · เฉลยไม่ได้ดาว) · ใช้ใบ้ครั้งละ −1 ดาวของรอบนั้น (ขั้นต่ำ 1★)';
-    var h = '<tr><th class="rowh">แผ่น →</th>';
+    $('#smHintInfo').textContent = t('sm.hintInfo', { bal: hintBalance(), start: HINT_START, per: HINT_PER_ROUND });
+    $('#smRules').innerHTML = t('sm.rules');
+    var h = '<tr><th class="rowh">' + t('sm.rowh') + '</th>';
     for (var k = MIN_N; k <= MAX_N; k++) h += '<th>' + k + '</th>';
-    h += '<th>รวม</th></tr>';
+    h += '<th>' + t('sm.total') + '</th></tr>';
     for (var lv in LEVELS) {
       var sum = 0;
       h += '<tr><th class="rowh">' + LEVELS[lv].name + '</th>';
@@ -2055,7 +2281,7 @@
       h += '<td><b>' + sum + '</b></td></tr>';
     }
     $('#smTable').innerHTML = h;
-    $('#smReset').textContent = 'รีเซ็ตสถิติทั้งหมด';
+    $('#smReset').textContent = t('sm.reset');
     resetArmed = false;
   }
   function resetAllStats() {
@@ -2071,7 +2297,7 @@
     saveStars(); savePrefs();
     init(START_N);                           // กลับไปเริ่มที่ด่านแรก (2 แผ่น) และรีเฟรชตัวเลขบนหน้าจอ
     $('#startLbl').textContent = startLabel();
-    setStatus('รีเซ็ตสถิติทั้งหมดแล้ว');
+    setStatus(t('st.resetDone'));
   }
   function openStars() { renderStarModal(); modal.hidden = false; modal.querySelector('.modal-card').scrollTop = 0; $('#smClose').focus({ preventScroll: true }); }
   function closeStars() { modal.hidden = true; resetArmed = false; $('#starTotal').focus({ preventScroll: true }); }
@@ -2079,7 +2305,7 @@
   $('#smClose').addEventListener('click', closeStars);
   modal.addEventListener('click', function (e) { if (e.target === modal) closeStars(); });
   $('#smReset').addEventListener('click', function () {
-    if (!resetArmed) { resetArmed = true; this.textContent = 'กดอีกครั้งเพื่อยืนยันรีเซ็ต'; return; }
+    if (!resetArmed) { resetArmed = true; this.textContent = t('sm.confirm'); return; }
     resetAllStats();
     renderStarModal();
   });
@@ -2094,6 +2320,52 @@
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
+
+  /* ---------- ภาษา: ใส่ข้อความตามภาษาที่เลือก ---------- */
+  function applyStatic() {
+    document.documentElement.lang = LANG;
+    document.title = t('doc.title');
+    for (var lv in LEVELS) LEVELS[lv].name = LEVELS[lv].icon + ' ' + t('lv.' + lv);
+    RANKS.forEach(function (r, i) { r.name = t('rank.' + i); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-html]'), function (el) { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-attr]'), function (el) {
+      el.getAttribute('data-i18n-attr').split(';').forEach(function (pair) {
+        var kv = pair.split(':'); el.setAttribute(kv[0], t(kv[1]));
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.lv'), function (b) {
+      var k = b.dataset.lv, nm = t('lv.' + k);
+      b.querySelector('.lv-n').textContent = ' ' + nm;
+      b.setAttribute('aria-label', k === 'perfect' ? t('aria.perfect') : nm);
+      b.title = k === 'perfect' ? t('title.perfect') : nm;
+    });
+    var lb = $('#langBtn');
+    lb.textContent = LANG === 'th' ? 'EN' : 'TH';
+    lb.setAttribute('aria-label', t('title.lang')); lb.title = t('title.lang');
+  }
+  function refreshLang() {                              // เรียกหลังเปลี่ยนภาษากลางเกม: อัปเดตข้อความที่สร้างจากโค้ด
+    applyStatic();
+    syncAudioUI();
+    updateHeader();
+    renderStarModal();
+    $('#startLbl').textContent = startLabel();
+    if (!won && !over && !solving && !started && moves === 0) setStatus(idleStatus());
+    if (!banner.hidden) {
+      if (banner.classList.contains('fail')) fillFailBanner();
+      else if (won && winInfo) fillWinBanner(winInfo);
+    }
+    render();
+  }
+  function setLang(l) {
+    if (l !== 'th' && l !== 'en') return;
+    LANG = l;
+    try { localStorage.setItem('hanoi-lang', l); } catch (e) {}
+    refreshLang();
+  }
+  $('#langBtn').addEventListener('click', function () { setLang(LANG === 'th' ? 'en' : 'th'); });
+
+  applyStatic();
   loadPrefs();
   loadStars();
   migrateBest();
